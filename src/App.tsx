@@ -4,7 +4,7 @@
  */
 
 import { useState, ReactNode } from "react";
-import { Calendar, Pill, Languages, Utensils, Settings, GraduationCap, Bot } from "lucide-react";
+import { Calendar, Pill, Languages, Utensils, Settings, GraduationCap, Bot, Cpu } from "lucide-react";
 import { cn } from "./lib/utils";
 import { Language, useTranslation } from "./lib/i18n";
 import ScheduleView from "./components/ScheduleView";
@@ -13,10 +13,11 @@ import TranslateView from "./components/TranslateView";
 import DietView from "./components/DietView";
 import GuidanceView from "./components/GuidanceView";
 import AssistantView from "./components/AssistantView";
+import GPUStudioView from "./components/GPUStudioView";
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<
-    "schedule" | "medication" | "diet" | "guidance" | "assistant"
+    "schedule" | "medication" | "diet" | "guidance" | "assistant" | "gpu-studio"
   >("schedule");
   const [lang, setLang] = useState<Language>("my"); // Default to Myanmar for caregiver
   const t = useTranslation(lang);
@@ -49,6 +50,7 @@ export default function App() {
         {activeTab === "diet" && <DietView lang={lang} />}
         {activeTab === "guidance" && <GuidanceView lang={lang} />}
         {activeTab === "assistant" && <AssistantView lang={lang} />}
+        {activeTab === "gpu-studio" && <GPUStudioView />}
       </main>
 
       {/* Bottom Navigation */}
@@ -82,6 +84,12 @@ export default function App() {
           label={t("assistant")}
           isActive={activeTab === "assistant"}
           onClick={() => setActiveTab("assistant")}
+        />
+        <NavItem
+          icon={<Cpu className="w-5 h-5" />}
+          label="GPU Studio"
+          isActive={activeTab === "gpu-studio"}
+          onClick={() => setActiveTab("gpu-studio")}
         />
       </nav>
     </div>
