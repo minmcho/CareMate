@@ -6,14 +6,17 @@ struct DietView: View {
     @State private var selectedTab = 0
 
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack(spacing: 0) {
+                // Glass segmented picker
                 Picker("", selection: $selectedTab) {
                     Text("Meals").tag(0)
                     Text("Recipes").tag(1)
                 }
                 .pickerStyle(.segmented)
-                .padding()
+                .padding(.horizontal)
+                .padding(.vertical, 10)
+                .background(.ultraThinMaterial)
 
                 if selectedTab == 0 {
                     MealsTab()
@@ -22,6 +25,8 @@ struct DietView: View {
                 }
             }
             .navigationTitle("Diet & Nutrition")
+            .navigationBarTitleDisplayMode(.large)
+            .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         }
     }
 }
@@ -36,29 +41,20 @@ struct MealsTab: View {
     let mealTypes: [MealType] = [.breakfast, .lunch, .dinner, .snack]
 
     var body: some View {
-        List(mealTypes, id: \.self) { type in
-            Section(type.displayName) {
-                let typeMeals = meals.filter { $0.type == type }
-                if typeMeals.isEmpty {
-                    Text("No \(type.displayName.lowercased()) planned")
-                        .foregroundColor(.secondary)
-                        .font(.subheadline)
+        ScrollView {
+            VStack(spacing: 14) {
+                if isLoading {
+                    GlassProgressView(label: "Loading meals...")
                 } else {
-                    ForEach(typeMeals) { meal in
-                        HStack {
-                            Image(systemName: type.icon)
-                                .foregroundColor(.orange)
-                            Text(meal.title)
-                            Spacer()
-                            Text(meal.time)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                        }
+                    ForEach(mealTypes, id: \.self) { type in
+                        MealSectionCard(type: type, meals: meals.filter { $0.type == type })
                     }
                 }
             }
+            .padding()
+            .padding(.bottom, 110)
         }
-        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
         .task { await loadMeals() }
     }
 
@@ -69,54 +65,145 @@ struct MealsTab: View {
     }
 }
 
+struct MealSectionCard: View {
+    let type: MealType
+    let meals: [Meal]
+
+    var mealColor: Color {
+        switch type {
+        case .breakfast: return .orange
+        case .lunch:     return .green
+        case .dinner:    return .indigo
+        case .snack:     return .pink
+        }
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 8) {
+                Image(systemName: type.icon)
+                    .font(.title3)
+                    .foregroundStyle(.white)
+                    .frame(width: 34, height: 34)
+                    .background(mealColor, in: RoundedRectangle(cornerRadius: 10))
+                Text(type.displayName)
+                    .font(.headline)
+                Spacer()
+                Text("\(meals.count)")
+                    .font(.caption.bold())
+                    .foregroundStyle(.white)
+                    .frame(width: 24, height: 24)
+                    .background(mealColor.opacity(0.8), in: Circle())
+            }
+
+            if meals.isEmpty {
+                Text("No \(type.displayName.lowercased()) planned")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .padding(.vertical, 4)
+            } else {
+                ForEach(meals) { meal in
+                    HStack {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(meal.title)
+                                .font(.subheadline.bold())
+                            Text(meal.time)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .font(.caption)
+                            .foregroundStyle(.tertiary)
+                    }
+                    .padding(10)
+                    .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 12))
+                }
+            }
+        }
+        .glassCard()
+    }
+}
+
 // MARK: - Recipes Tab
 
 struct RecipesTab: View {
     @EnvironmentObject var appState: AppState
     @State private var recipes: [Recipe] = []
     @State private var isLoading = false
-    @State private var showImagePicker = false
     @State private var selectedItem: PhotosPickerItem?
     @State private var isExtracting = false
     @State private var errorMessage: String?
 
     var body: some View {
-        VStack {
-            if isLoading || isExtracting {
-                ProgressView(isExtracting ? "Extracting recipe with AI..." : "Loading...")
-                    .padding()
-            }
-
-            List {
-                Section {
-                    PhotosPicker(selection: $selectedItem, matching: .images) {
-                        Label("Scan Recipe from Photo", systemImage: "camera.viewfinder")
-                            .foregroundColor(.blue)
-                    }
-                    .onChange(of: selectedItem) { item in
-                        Task { await extractRecipe(from: item) }
+        ScrollView {
+            VStack(spacing: 14) {
+                // Scan button card
+                PhotosPicker(selection: $selectedItem, matching: .images) {
+                    HStack(spacing: 14) {
+                        ZStack {
+                            Circle()
+                                .fill(LinearGradient(colors: [.blue, .purple], startPoint: .topLeading, endPoint: .bottomTrailing))
+                                .frame(width: 48, height: 48)
+                            Image(systemName: "camera.viewfinder")
+                                .font(.title3)
+                                .foregroundStyle(.white)
+                        }
+                        VStack(alignment: .leading, spacing: 3) {
+                            Text("Scan Recipe from Photo")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                            Text("AI-powered recipe extraction")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        Spacer()
+                        Image(systemName: "chevron.right")
+                            .foregroundStyle(.secondary)
                     }
                 }
-
-                ForEach(recipes) { recipe in
-                    NavigationLink {
-                        RecipeDetailView(recipe: recipe, language: appState.language.rawValue)
-                    } label: {
-                        RecipeRowView(recipe: recipe)
-                    }
+                .glassCard()
+                .onChange(of: selectedItem) { item in
+                    Task { await extractRecipe(from: item) }
                 }
-                .onDelete { indices in
-                    Task {
-                        for i in indices {
-                            let recipe = recipes[i]
-                            try? await APIService.shared.delete("/api/diet/recipes/\(recipe.id)")
-                            recipes.remove(atOffsets: indices)
+
+                if isExtracting {
+                    GlassProgressView(label: "Extracting recipe with AI...")
+                } else if isLoading {
+                    GlassProgressView(label: "Loading...")
+                }
+
+                if !recipes.isEmpty {
+                    LazyVStack(spacing: 12) {
+                        ForEach(recipes) { recipe in
+                            NavigationLink {
+                                RecipeDetailView(recipe: recipe, language: appState.language.rawValue)
+                            } label: {
+                                RecipeRowView(recipe: recipe)
+                            }
+                            .buttonStyle(.plain)
                         }
                     }
+                } else if !isLoading {
+                    VStack(spacing: 16) {
+                        Image(systemName: "fork.knife.circle")
+                            .font(.system(size: 56))
+                            .symbolRenderingMode(.hierarchical)
+                            .foregroundStyle(.green)
+                        Text("No recipes yet")
+                            .font(.title3.bold())
+                        Text("Scan a recipe photo to get started")
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .glassCard(cornerRadius: 24, padding: 36)
                 }
             }
-            .listStyle(.insetGrouped)
+            .padding()
+            .padding(.bottom, 110)
         }
+        .scrollContentBackground(.hidden)
         .task { await loadRecipes() }
         .alert("Error", isPresented: .constant(errorMessage != nil)) {
             Button("OK") { errorMessage = nil }
@@ -152,20 +239,38 @@ struct RecipesTab: View {
 
 struct RecipeRowView: View {
     let recipe: Recipe
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(recipe.title)
-                .font(.headline)
-            HStack {
-                Image(systemName: "clock")
-                Text(recipe.cookingTime)
-                Spacer()
-                Text("\(recipe.ingredientsEn.count) ingredients")
+        HStack(spacing: 14) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(LinearGradient(colors: [.green.opacity(0.7), .teal.opacity(0.7)], startPoint: .topLeading, endPoint: .bottomTrailing))
+                    .frame(width: 52, height: 52)
+                Image(systemName: "fork.knife")
+                    .font(.title3)
+                    .foregroundStyle(.white)
             }
-            .font(.caption)
-            .foregroundColor(.secondary)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(recipe.title)
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                HStack(spacing: 10) {
+                    Label(recipe.cookingTime, systemImage: "clock")
+                    Text("·")
+                    Text("\(recipe.ingredientsEn.count) ingredients")
+                }
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            }
+
+            Spacer()
+
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(.tertiary)
         }
-        .padding(.vertical, 2)
+        .glassCard(cornerRadius: 18, padding: 14)
     }
 }
 
@@ -178,55 +283,60 @@ struct RecipeDetailView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
+                // Header card
                 HStack {
                     Label(recipe.cookingTime, systemImage: "clock")
                     Spacer()
                     Label("\(recipe.ingredientsEn.count) ingredients", systemImage: "list.bullet")
                 }
                 .font(.subheadline)
-                .foregroundColor(.secondary)
-                .padding(.horizontal)
-
-                Divider()
+                .foregroundStyle(.secondary)
+                .glassCard()
 
                 ingredientsSection
                 instructionsSection
             }
             .padding()
+            .padding(.bottom, 40)
         }
+        .scrollContentBackground(.hidden)
         .navigationTitle(recipe.title)
         .navigationBarTitleDisplayMode(.large)
+        .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
     }
 
     private var ingredientsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Ingredients")
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Ingredients", systemImage: "checklist")
                 .font(.title3.bold())
             ForEach(Array(recipe.ingredients(for: language).enumerated()), id: \.0) { _, ingredient in
-                HStack {
-                    Circle().fill(.green).frame(width: 6, height: 6)
+                HStack(spacing: 10) {
+                    Circle().fill(.green).frame(width: 7, height: 7)
                     Text(ingredient)
+                        .font(.subheadline)
                 }
             }
         }
+        .glassCard()
     }
 
     private var instructionsSection: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Instructions")
+        VStack(alignment: .leading, spacing: 12) {
+            Label("Instructions", systemImage: "list.number")
                 .font(.title3.bold())
             ForEach(Array(recipe.instructions(for: language).enumerated()), id: \.0) { i, step in
                 HStack(alignment: .top, spacing: 12) {
                     Text("\(i + 1)")
                         .font(.caption.bold())
-                        .frame(width: 24, height: 24)
-                        .background(Color.blue)
-                        .foregroundColor(.white)
-                        .clipShape(Circle())
+                        .foregroundStyle(.white)
+                        .frame(width: 26, height: 26)
+                        .background(.blue, in: Circle())
                     Text(step)
+                        .font(.subheadline)
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
         }
+        .glassCard()
     }
 }
