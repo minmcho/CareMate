@@ -1,0 +1,5 @@
+{
+  "name": "CareMate SG",
+  "description": "A bilingual caregiver assistant app for Myanmar caregivers in Singapore, featuring schedule management and voice translation.",
+  "requestFramePermissions": ["camera", "microphone"]
+}
