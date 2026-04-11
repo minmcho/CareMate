@@ -1,256 +1,391 @@
-export type Language = 'en' | 'my' | 'th' | 'ar';
+/**
+ * VitalPath AI — localisation layer.
+ * Supported: English, Burmese, Thai, Simplified Chinese, Japanese, Korean.
+ */
 
-export const translations = {
-  en: {
-    schedule: 'Schedule',
-    medication: 'Medication',
-    translate: 'Translate',
-    diet: 'Diet & Recipes',
-    mealPlan: 'Meal Plan',
-    recipes: 'Recipes',
-    breakfast: 'Breakfast',
-    lunch: 'Lunch',
-    dinner: 'Dinner',
-    ingredients: 'Ingredients',
-    instructions: 'Instructions',
-    tasks: 'Tasks',
-    addTask: 'Add Task',
-    taskName: 'Task Name',
-    time: 'Time',
-    save: 'Save',
-    cancel: 'Cancel',
-    noTasks: 'No tasks for today.',
-    markDone: 'Mark Done',
-    done: 'Done',
-    medName: 'Medication Name',
-    dosage: 'Dosage',
-    addMed: 'Add Medication',
-    noMeds: 'No medications for today.',
-    holdToSpeak: 'Hold to Speak',
-    releaseToSend: 'Release to Send',
-    translating: 'Translating...',
-    speakNow: 'Speak Now',
-    employer: 'Employer',
-    caregiver: 'Caregiver',
-    switchRole: 'Switch Role',
-    settings: 'Settings',
-    edit: 'Edit',
-    delete: 'Delete',
-    pending: 'Pending',
-    inProgress: 'In Progress',
-    completed: 'Completed',
-    notifyFamily: 'Notify Family',
-    remindCaregiver: 'Remind Caregiver',
-    notificationSent: 'Notification Sent!',
-    addMeal: 'Add Meal',
-    addRecipe: 'Add Recipe',
-    mealName: 'Meal Name',
-    recipeName: 'Recipe Name',
-    type: 'Type',
-    guidance: 'Guidance',
-    ourAim: 'Our Aim',
-    aimDescription: 'To equip the caregiver with relevant skills of looking after the person needing care (PNC) at home, including hospice care patients.',
-    hr: 'hr',
-    min: 'min',
-    left: 'left',
-    overdue: 'Overdue',
-    back: 'Back',
-    scanRecipe: 'Scan Recipe',
-    scanning: 'Scanning...',
-    scanError: 'Failed to scan recipe.',
-    categoryTheory: 'Theory',
-    categoryPractical: 'Practical',
-    categorySkills: 'Specific Skills',
-    assistant: 'Assistant',
-  },
-  my: {
-    schedule: 'အချိန်ဇယား', // Schedule
-    medication: 'ဆေးဝါး', // Medication
-    translate: 'ဘာသာပြန်', // Translate
-    diet: 'အစားအသောက်', // Diet
-    mealPlan: 'စားသောက်မှုအစီအစဉ်', // Meal Plan
-    recipes: 'ဟင်းချက်နည်းများ', // Recipes
-    breakfast: 'နံနက်စာ', // Breakfast
-    lunch: 'နေ့လည်စာ', // Lunch
-    dinner: 'ညစာ', // Dinner
-    ingredients: 'ပါဝင်ပစ္စည်းများ', // Ingredients
-    instructions: 'ချက်ပြုတ်နည်း', // Instructions
-    tasks: 'လုပ်ဆောင်စရာများ', // Tasks
-    addTask: 'အလုပ်ထည့်ရန်', // Add Task
-    taskName: 'အလုပ်အမည်', // Task Name
-    time: 'အချိန်', // Time
-    save: 'သိမ်းဆည်းရန်', // Save
-    cancel: 'ပယ်ဖျက်ရန်', // Cancel
-    noTasks: 'ယနေ့အတွက် အလုပ်မရှိပါ။', // No tasks for today
-    markDone: 'ပြီးပြီဟု မှတ်သားရန်', // Mark Done
-    done: 'ပြီးပြီ', // Done
-    medName: 'ဆေးအမည်', // Medication Name
-    dosage: 'သောက်ရမည့်ပမာဏ', // Dosage
-    addMed: 'ဆေးထည့်ရန်', // Add Medication
-    noMeds: 'ယနေ့အတွက် ဆေးမရှိပါ။', // No medications for today
-    holdToSpeak: 'စကားပြောရန် ဖိထားပါ', // Hold to Speak
-    releaseToSend: 'ပို့ရန် လွှတ်လိုက်ပါ', // Release to Send
-    translating: 'ဘာသာပြန်နေသည်...', // Translating...
-    speakNow: 'ယခုပြောပါ', // Speak Now
-    employer: 'အလုပ်ရှင်', // Employer
-    caregiver: 'ပြုစုစောင့်ရှောက်သူ', // Caregiver
-    switchRole: 'အခန်းကဏ္ဍပြောင်းရန်', // Switch Role
-    settings: 'ဆက်တင်များ', // Settings
-    edit: 'ပြင်ဆင်ရန်',
-    delete: 'ဖျက်ရန်',
-    pending: 'မစရသေး',
-    inProgress: 'လုပ်ဆောင်ဆဲ',
-    completed: 'ပြီးစီး',
-    notifyFamily: 'မိသားစုကို အသိပေးရန်',
-    remindCaregiver: 'ပြုစုသူကို သတိပေးရန်',
-    notificationSent: 'အသိပေးချက် ပို့ပြီးပါပြီ!',
-    addMeal: 'အစားအစာထည့်ရန်',
-    addRecipe: 'ဟင်းချက်နည်းထည့်ရန်',
-    mealName: 'အစားအစာအမည်',
-    recipeName: 'ဟင်းချက်နည်းအမည်',
-    type: 'အမျိုးအစား',
-    guidance: 'လမ်းညွှန်ချက်',
-    ourAim: 'ကျွန်ုပ်တို့၏ ရည်ရွယ်ချက်',
-    aimDescription: 'ပြုစုစောင့်ရှောက်သူများအား အိမ်တွင် ပြုစုစောင့်ရှောက်ရန် လိုအပ်သူများ (PNC) နှင့် သက်သာရာရစေသော စောင့်ရှောက်မှုခံယူနေသည့် လူနာများအား ပြုစုရန် သက်ဆိုင်ရာ ကျွမ်းကျင်မှုများ တပ်ဆင်ပေးရန်။',
-    hr: 'နာရီ',
-    min: 'မိနစ်',
-    left: 'လိုသေးသည်',
-    overdue: 'အချိန်လွန်နေပါပြီ',
-    back: 'နောက်သို့',
-    scanRecipe: 'ဟင်းချက်နည်းကို စကင်ဖတ်ရန်',
-    scanning: 'စကင်ဖတ်နေသည်...',
-    scanError: 'ဟင်းချက်နည်း စကင်ဖတ်ခြင်း မအောင်မြင်ပါ။',
-    categoryTheory: 'သီအိုရီ',
-    categoryPractical: 'လက်တွေ့',
-    categorySkills: 'အထူးကျွမ်းကျင်မှုများ',
-    assistant: 'လက်ထောက်',
-  },
-  th: {
-    schedule: 'ตารางเวลา',
-    medication: 'ยา',
-    translate: 'แปลภาษา',
-    diet: 'อาหารและสูตร',
-    mealPlan: 'แผนมื้ออาหาร',
-    recipes: 'สูตรอาหาร',
-    breakfast: 'อาหารเช้า',
-    lunch: 'อาหารกลางวัน',
-    dinner: 'อาหารเย็น',
-    ingredients: 'ส่วนผสม',
-    instructions: 'วิธีทำ',
-    tasks: 'งาน',
-    addTask: 'เพิ่มงาน',
-    taskName: 'ชื่องาน',
-    time: 'เวลา',
-    save: 'บันทึก',
-    cancel: 'ยกเลิก',
-    noTasks: 'ไม่มีงานสำหรับวันนี้',
-    markDone: 'ทำเครื่องหมายว่าเสร็จแล้ว',
-    done: 'เสร็จแล้ว',
-    medName: 'ชื่อยา',
-    dosage: 'ปริมาณ',
-    addMed: 'เพิ่มยา',
-    noMeds: 'ไม่มียาสำหรับวันนี้',
-    holdToSpeak: 'กดค้างเพื่อพูด',
-    releaseToSend: 'ปล่อยเพื่อส่ง',
-    translating: 'กำลังแปล...',
-    speakNow: 'พูดเลย',
-    employer: 'นายจ้าง',
-    caregiver: 'ผู้ดูแล',
-    switchRole: 'สลับบทบาท',
-    settings: 'การตั้งค่า',
-    edit: 'แก้ไข',
-    delete: 'ลบ',
-    pending: 'รอดำเนินการ',
-    inProgress: 'กำลังดำเนินการ',
-    completed: 'เสร็จสิ้น',
-    notifyFamily: 'แจ้งครอบครัว',
-    remindCaregiver: 'เตือนผู้ดูแล',
-    notificationSent: 'ส่งการแจ้งเตือนแล้ว!',
-    addMeal: 'เพิ่มมื้ออาหาร',
-    addRecipe: 'เพิ่มสูตรอาหาร',
-    mealName: 'ชื่อมื้ออาหาร',
-    recipeName: 'ชื่อสูตรอาหาร',
-    type: 'ประเภท',
-    guidance: 'คำแนะนำ',
-    ourAim: 'เป้าหมายของเรา',
-    aimDescription: 'เพื่อให้ผู้ดูแลมีทักษะที่เกี่ยวข้องในการดูแลผู้ที่ต้องการการดูแล (PNC) ที่บ้าน รวมถึงผู้ป่วยที่ได้รับการดูแลแบบประคับประคอง',
-    hr: 'ชม.',
-    min: 'นาที',
-    left: 'เหลือ',
-    overdue: 'เลยเวลา',
-    back: 'กลับ',
-    scanRecipe: 'สแกนสูตรอาหาร',
-    scanning: 'กำลังสแกน...',
-    scanError: 'สแกนสูตรอาหารไม่สำเร็จ',
-    categoryTheory: 'ทฤษฎี',
-    categoryPractical: 'ปฏิบัติ',
-    categorySkills: 'ทักษะเฉพาะด้าน',
-    assistant: 'ผู้ช่วย',
-  },
-  ar: {
-    schedule: 'الجدول',
-    medication: 'الدواء',
-    translate: 'ترجمة',
-    diet: 'النظام الغذائي والوصفات',
-    mealPlan: 'خطة الوجبات',
-    recipes: 'وصفات',
-    breakfast: 'فطور',
-    lunch: 'غداء',
-    dinner: 'عشاء',
-    ingredients: 'المكونات',
-    instructions: 'التعليمات',
-    tasks: 'المهام',
-    addTask: 'إضافة مهمة',
-    taskName: 'اسم المهمة',
-    time: 'الوقت',
-    save: 'حفظ',
-    cancel: 'إلغاء',
-    noTasks: 'لا توجد مهام لليوم.',
-    markDone: 'تحديد كمنجز',
-    done: 'تم',
-    medName: 'اسم الدواء',
-    dosage: 'الجرعة',
-    addMed: 'إضافة دواء',
-    noMeds: 'لا توجد أدوية لليوم.',
-    holdToSpeak: 'اضغط باستمرار للتحدث',
-    releaseToSend: 'حرر للإرسال',
-    translating: 'جاري الترجمة...',
-    speakNow: 'تحدث الآن',
-    employer: 'صاحب العمل',
-    caregiver: 'مقدم الرعاية',
-    switchRole: 'تبديل الدور',
-    settings: 'الإعدادات',
-    edit: 'تعديل',
-    delete: 'حذف',
-    pending: 'قيد الانتظار',
-    inProgress: 'قيد التنفيذ',
-    completed: 'مكتمل',
-    notifyFamily: 'إبلاغ العائلة',
-    remindCaregiver: 'تذكير مقدم الرعاية',
-    notificationSent: 'تم إرسال الإشعار!',
-    addMeal: 'إضافة وجبة',
-    addRecipe: 'إضافة وصفة',
-    mealName: 'اسم الوجبة',
-    recipeName: 'اسم الوصفة',
-    type: 'النوع',
-    guidance: 'إرشاد',
-    ourAim: 'هدفنا',
-    aimDescription: 'تزويد مقدم الرعاية بالمهارات ذات الصلة لرعاية الشخص الذي يحتاج إلى رعاية (PNC) في المنزل، بما في ذلك مرضى رعاية المسنين.',
-    hr: 'ساعة',
-    min: 'دقيقة',
-    left: 'متبقي',
-    overdue: 'متأخر',
-    back: 'رجوع',
-    scanRecipe: 'مسح الوصفة',
-    scanning: 'جاري المسح...',
-    scanError: 'فشل مسح الوصفة.',
-    categoryTheory: 'نظري',
-    categoryPractical: 'عملي',
-    categorySkills: 'مهارات محددة',
-    assistant: 'مساعد',
-  }
+import type { Language } from "./types";
+
+type Dictionary = {
+  appName: string;
+  tagline: string;
+  home: string;
+  chat: string;
+  video: string;
+  habits: string;
+  profile: string;
+  greetingMorning: string;
+  greetingAfternoon: string;
+  greetingEvening: string;
+  todaysFocus: string;
+  dailyCheckIn: string;
+  howAreYouFeeling: string;
+  streak: string;
+  days: string;
+  freezeStreak: string;
+  freezeUsed: string;
+  weeklyProgress: string;
+  startBreathing: string;
+  breathingTitle: string;
+  breathingSubtitle: string;
+  coachPlaceholder: string;
+  send: string;
+  coachWelcome: string;
+  coachThinking: string;
+  coachDisclaimer: string;
+  recordMeal: string;
+  recordExercise: string;
+  analyzing: string;
+  analysisReady: string;
+  nutritionEstimate: string;
+  formNotes: string;
+  wellnessScore: string;
+  safetyFlag: string;
+  highlights: string;
+  cautions: string;
+  newHabit: string;
+  addHabit: string;
+  habitTitle: string;
+  habitGoal: string;
+  habitTarget: string;
+  myHabits: string;
+  completedToday: string;
+  markDone: string;
+  undo: string;
+  preferences: string;
+  dietary: string;
+  wellnessGoals: string;
+  comforts: string;
+  avoid: string;
+  language: string;
+  signOut: string;
+  privacyTitle: string;
+  privacyBody: string;
+  wellnessNotMedicine: string;
+  onboardTitle: string;
+  onboardSubtitle: string;
+  onboardCTA: string;
+  namePrompt: string;
+  continue: string;
+  crisisTitle: string;
+  crisisBody: string;
+  crisisCall: string;
+  crisisText: string;
+  close: string;
+  tryBreathing: string;
+  nutritionTag: string;
+  stressTag: string;
+  sleepTag: string;
+  movementTag: string;
+  mindfulnessTag: string;
+  hydrationTag: string;
+  vegetarian: string;
+  vegan: string;
+  glutenFree: string;
+  lowSugar: string;
+  halal: string;
+  kosher: string;
+  meditation: string;
+  walking: string;
+  yoga: string;
+  knee: string;
+  back: string;
+  online: string;
+  offline: string;
+  fallbackActive: string;
+  blockedMedicalClaim: string;
+  recording: string;
+  stopRecording: string;
+  retake: string;
+  analyze: string;
+  mealMode: string;
+  exerciseMode: string;
+  noAnalysisYet: string;
+  cameraUnavailable: string;
+  startChatting: string;
+  suggested: string;
+  moodCalm: string;
+  moodOk: string;
+  moodTired: string;
+  moodStressed: string;
+  moodLow: string;
+  yourProfile: string;
+  accountId: string;
+  dataLocal: string;
+  deleteData: string;
+  confirmDelete: string;
+  welcomeBack: string;
 };
 
+const en: Dictionary = {
+  appName: "VitalPath AI",
+  tagline: "Wellness, not medicine.",
+  home: "Home",
+  chat: "Coach",
+  video: "Vision",
+  habits: "Habits",
+  profile: "Profile",
+  greetingMorning: "Good morning",
+  greetingAfternoon: "Good afternoon",
+  greetingEvening: "Good evening",
+  todaysFocus: "Today's focus",
+  dailyCheckIn: "Daily check-in",
+  howAreYouFeeling: "How are you feeling?",
+  streak: "Streak",
+  days: "days",
+  freezeStreak: "Freeze streak",
+  freezeUsed: "Freeze used",
+  weeklyProgress: "Weekly progress",
+  startBreathing: "Start 2-min breathing",
+  breathingTitle: "Box breathing",
+  breathingSubtitle: "Inhale · Hold · Exhale · Hold",
+  coachPlaceholder: "Share what's on your mind…",
+  send: "Send",
+  coachWelcome: "Hi, I'm your wellness coach. I'm here to support your lifestyle goals — not to diagnose or prescribe. What would you like to focus on today?",
+  coachThinking: "Coach is reflecting…",
+  coachDisclaimer: "VitalPath offers wellness guidance only. For medical concerns, consult a licensed professional.",
+  recordMeal: "Analyze a meal",
+  recordExercise: "Check my form",
+  analyzing: "Analyzing with vision model…",
+  analysisReady: "Analysis ready",
+  nutritionEstimate: "Nutrition estimate",
+  formNotes: "Form notes",
+  wellnessScore: "Wellness score",
+  safetyFlag: "Safety flag",
+  highlights: "Highlights",
+  cautions: "Gentle cautions",
+  newHabit: "New habit",
+  addHabit: "Add habit",
+  habitTitle: "Habit title",
+  habitGoal: "Focus area",
+  habitTarget: "Times per week",
+  myHabits: "My habits",
+  completedToday: "Completed today",
+  markDone: "Mark done",
+  undo: "Undo",
+  preferences: "Preferences",
+  dietary: "Dietary preferences",
+  wellnessGoals: "Wellness goals",
+  comforts: "What comforts me",
+  avoid: "Avoid / sensitive",
+  language: "Language",
+  signOut: "Sign out",
+  privacyTitle: "Privacy & safety",
+  privacyBody: "Your data stays on this device unless you sign in to sync. Crisis inputs are never stored in plain text.",
+  wellnessNotMedicine: "Wellness, not medicine",
+  onboardTitle: "Welcome to VitalPath",
+  onboardSubtitle: "A gentle coach for habits, mindfulness, and movement — always within safe wellness boundaries.",
+  onboardCTA: "Get started",
+  namePrompt: "What should we call you?",
+  continue: "Continue",
+  crisisTitle: "You are not alone",
+  crisisBody: "We noticed something that sounds serious. Please reach out to people trained to help.",
+  crisisCall: "Call a helpline",
+  crisisText: "Text support",
+  close: "Close",
+  tryBreathing: "Try breathing",
+  nutritionTag: "Nutrition",
+  stressTag: "Stress",
+  sleepTag: "Sleep",
+  movementTag: "Movement",
+  mindfulnessTag: "Mindfulness",
+  hydrationTag: "Hydration",
+  vegetarian: "Vegetarian",
+  vegan: "Vegan",
+  glutenFree: "Gluten-free",
+  lowSugar: "Low sugar",
+  halal: "Halal",
+  kosher: "Kosher",
+  meditation: "Meditation",
+  walking: "Walking",
+  yoga: "Yoga",
+  knee: "Knee-friendly",
+  back: "Back-friendly",
+  online: "Online",
+  offline: "Offline",
+  fallbackActive: "Fallback tips active",
+  blockedMedicalClaim: "A response was rewritten to stay within wellness guidance.",
+  recording: "Recording…",
+  stopRecording: "Stop",
+  retake: "Retake",
+  analyze: "Analyze",
+  mealMode: "Meal",
+  exerciseMode: "Movement",
+  noAnalysisYet: "No analysis yet. Tap a mode to begin.",
+  cameraUnavailable: "Camera preview is simulated in this environment.",
+  startChatting: "Start a gentle conversation.",
+  suggested: "Suggested",
+  moodCalm: "Calm",
+  moodOk: "Okay",
+  moodTired: "Tired",
+  moodStressed: "Stressed",
+  moodLow: "Low",
+  yourProfile: "Your profile",
+  accountId: "Account",
+  dataLocal: "Stored on this device",
+  deleteData: "Delete local data",
+  confirmDelete: "Delete all local data?",
+  welcomeBack: "Welcome back",
+};
+
+const my: Dictionary = {
+  ...en,
+  appName: "VitalPath AI",
+  tagline: "ကျန်းမာရေး၊ ဆေးမဟုတ်ပါ။",
+  home: "ပင်မ",
+  chat: "နည်းပြ",
+  video: "ရူပါရုံ",
+  habits: "အလေ့အထ",
+  profile: "ကိုယ်ရေး",
+  greetingMorning: "မင်္ဂလာ နံနက်ခင်း",
+  greetingAfternoon: "မင်္ဂလာ နေ့လယ်ခင်း",
+  greetingEvening: "မင်္ဂလာ ညနေခင်း",
+  todaysFocus: "ယနေ့အာရုံစိုက်ရန်",
+  dailyCheckIn: "နေ့စဥ် စစ်ဆေးချက်",
+  howAreYouFeeling: "ဘယ်လိုခံစားနေလဲ?",
+  streak: "ဆက်တိုက်",
+  days: "ရက်",
+  freezeStreak: "ဆက်တိုက်ရပ်နားရန်",
+  weeklyProgress: "အပတ်စဥ် တိုးတက်မှု",
+  startBreathing: "၂ မိနစ် အသက်ရှုလေ့ကျင့်ခန်း",
+  crisisTitle: "သင်တစ်ယောက်တည်း မဟုတ်ပါ",
+  crisisBody: "အရေးကြီးတဲ့အရာ တစ်ခုခုကို သတိထားမိပါတယ်။ ကူညီနိုင်တဲ့ အဖွဲ့အစည်းကို ဆက်သွယ်ပါ။",
+  wellnessNotMedicine: "ကျန်းမာရေး၊ ဆေးမဟုတ်ပါ",
+};
+
+const th: Dictionary = {
+  ...en,
+  tagline: "สุขภาวะ ไม่ใช่การแพทย์",
+  home: "หน้าแรก",
+  chat: "โค้ช",
+  video: "วิเคราะห์",
+  habits: "นิสัย",
+  profile: "โปรไฟล์",
+  greetingMorning: "อรุณสวัสดิ์",
+  greetingAfternoon: "สวัสดีตอนบ่าย",
+  greetingEvening: "สวัสดีตอนเย็น",
+  todaysFocus: "โฟกัสของวันนี้",
+  dailyCheckIn: "เช็คอินประจำวัน",
+  howAreYouFeeling: "วันนี้รู้สึกอย่างไร?",
+  streak: "สตรีค",
+  days: "วัน",
+  startBreathing: "หายใจ 2 นาที",
+  crisisTitle: "คุณไม่ได้อยู่คนเดียว",
+  crisisBody: "เราสังเกตเห็นบางอย่างที่อาจจริงจัง กรุณาติดต่อผู้ที่ได้รับการอบรมเพื่อช่วยเหลือ",
+  wellnessNotMedicine: "สุขภาวะ ไม่ใช่การแพทย์",
+};
+
+const zh: Dictionary = {
+  ...en,
+  tagline: "健康指引，非医疗诊断。",
+  home: "首页",
+  chat: "教练",
+  video: "视觉",
+  habits: "习惯",
+  profile: "个人",
+  greetingMorning: "早上好",
+  greetingAfternoon: "下午好",
+  greetingEvening: "晚上好",
+  todaysFocus: "今日重点",
+  dailyCheckIn: "每日签到",
+  howAreYouFeeling: "今天感觉怎么样？",
+  streak: "连续",
+  days: "天",
+  startBreathing: "开始 2 分钟呼吸",
+  crisisTitle: "你并不孤单",
+  crisisBody: "我们注意到可能比较严重的情况，请联系专业援助。",
+  wellnessNotMedicine: "健康指引，非医疗",
+};
+
+const ja: Dictionary = {
+  ...en,
+  tagline: "ウェルネス、医療ではありません。",
+  home: "ホーム",
+  chat: "コーチ",
+  video: "ビジョン",
+  habits: "習慣",
+  profile: "プロフィール",
+  greetingMorning: "おはようございます",
+  greetingAfternoon: "こんにちは",
+  greetingEvening: "こんばんは",
+  todaysFocus: "今日のフォーカス",
+  dailyCheckIn: "デイリーチェックイン",
+  howAreYouFeeling: "今日の気分は？",
+  streak: "連続",
+  days: "日",
+  startBreathing: "2分間の呼吸法",
+  crisisTitle: "あなたは一人ではありません",
+  crisisBody: "深刻な内容が検出されました。専門の相談窓口にご連絡ください。",
+  wellnessNotMedicine: "ウェルネス、医療ではありません",
+};
+
+const ko: Dictionary = {
+  ...en,
+  tagline: "웰니스, 의료가 아닙니다.",
+  home: "홈",
+  chat: "코치",
+  video: "비전",
+  habits: "습관",
+  profile: "프로필",
+  greetingMorning: "좋은 아침입니다",
+  greetingAfternoon: "좋은 오후입니다",
+  greetingEvening: "좋은 저녁입니다",
+  todaysFocus: "오늘의 집중",
+  dailyCheckIn: "일일 체크인",
+  howAreYouFeeling: "오늘 기분 어떠세요?",
+  streak: "연속",
+  days: "일",
+  startBreathing: "2분 호흡 시작",
+  crisisTitle: "혼자가 아닙니다",
+  crisisBody: "심각할 수 있는 내용이 감지되었습니다. 도움을 줄 수 있는 전문가에게 연락해 주세요.",
+  wellnessNotMedicine: "웰니스, 의료가 아닙니다",
+};
+
+const dictionaries: Record<Language, Dictionary> = { en, my, th, zh, ja, ko };
+
+export type TKey = keyof Dictionary;
+
 export function useTranslation(lang: Language) {
-  return (key: keyof typeof translations.en) => translations[lang][key] || translations.en[key];
+  const dict = dictionaries[lang] ?? en;
+  return (key: TKey): string => dict[key] ?? en[key];
 }
+
+export const availableLanguages: { code: Language; label: string; flag: string }[] = [
+  { code: "en", label: "English", flag: "EN" },
+  { code: "my", label: "မြန်မာ", flag: "MY" },
+  { code: "th", label: "ไทย", flag: "TH" },
+  { code: "zh", label: "中文", flag: "ZH" },
+  { code: "ja", label: "日本語", flag: "JA" },
+  { code: "ko", label: "한국어", flag: "KO" },
+];
+
+/**
+ * Localised crisis resources — displayed in the crisis modal.
+ * Extending this list is how we add new jurisdictions.
+ */
+export const crisisResources: Record<Language, { name: string; number: string; url?: string }[]> = {
+  en: [
+    { name: "988 Suicide & Crisis Lifeline (US)", number: "988" },
+    { name: "Samaritans (UK)", number: "116 123" },
+    { name: "Lifeline (AU)", number: "13 11 14" },
+  ],
+  my: [
+    { name: "Mental Health Myanmar", number: "09 7509 32679" },
+    { name: "International Lifeline", number: "+1 800 273 8255" },
+  ],
+  th: [
+    { name: "Department of Mental Health (TH)", number: "1323" },
+    { name: "Samaritans Thailand", number: "02 713 6793" },
+  ],
+  zh: [
+    { name: "Beijing Crisis Research & Intervention Center", number: "010-82951332" },
+    { name: "Lifeline Taiwan", number: "1995" },
+  ],
+  ja: [
+    { name: "Inochi no Denwa", number: "0120-783-556" },
+    { name: "TELL Lifeline", number: "03-5774-0992" },
+  ],
+  ko: [
+    { name: "Ministry of Health & Welfare Hotline", number: "1393" },
+    { name: "Korea Suicide Prevention", number: "1577-0199" },
+  ],
+};

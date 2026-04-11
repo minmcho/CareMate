@@ -1,119 +1,270 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * VitalPath AI — main application shell.
+ *
+ * - Apple "liquid glass" surfaces throughout.
+ * - Motion-powered screen transitions.
+ * - Safety-first: every message/output passes through the safety validator.
  */
 
-import { useState, ReactNode } from "react";
-import { Calendar, Pill, Languages, Utensils, Settings, GraduationCap, Bot } from "lucide-react";
-import { cn } from "./lib/utils";
-import { Language, useTranslation } from "./lib/i18n";
-import ScheduleView from "./components/ScheduleView";
-import MedicationView from "./components/MedicationView";
-import TranslateView from "./components/TranslateView";
-import DietView from "./components/DietView";
-import GuidanceView from "./components/GuidanceView";
-import AssistantView from "./components/AssistantView";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "motion/react";
+
+import AmbientBackdrop from "./components/AmbientBackdrop";
+import BreathingOverlay from "./components/BreathingOverlay";
+import CrisisModal from "./components/CrisisModal";
+import TabBar, { TabKey } from "./components/TabBar";
+import VitalHeader from "./components/VitalHeader";
+import OnboardingView from "./views/OnboardingView";
+import HomeView from "./views/HomeView";
+import ChatView from "./views/ChatView";
+import VideoView from "./views/VideoView";
+import HabitsView from "./views/HabitsView";
+import ProfileView from "./views/ProfileView";
+import type {
+  ChatMessage,
+  CrisisEvent,
+  Habit,
+  Language,
+  VideoAnalysis,
+  WellnessProfile,
+  WellnessSession,
+} from "./lib/types";
+import { newId, storage } from "./lib/storage";
+import { getBreakerState } from "./lib/ai";
+import { hashForAudit } from "./lib/safety";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<
-    "schedule" | "medication" | "diet" | "guidance" | "assistant"
-  >("schedule");
-  const [lang, setLang] = useState<Language>("my"); // Default to Myanmar for caregiver
-  const t = useTranslation(lang);
+  const [profile, setProfile] = useState<WellnessProfile | null>(() => storage.getProfile());
+  const [lang, setLang] = useState<Language>(() => storage.getProfile()?.preferredLanguage ?? "en");
+  const [tab, setTab] = useState<TabKey>("home");
+  const [messages, setMessages] = useState<ChatMessage[]>(() => storage.getChat());
+  const [sessions, setSessions] = useState<WellnessSession[]>(() => storage.getSessions());
+  const [habits, setHabits] = useState<Habit[]>(() => storage.getHabits());
+  const [videos, setVideos] = useState<VideoAnalysis[]>(() => storage.getVideos());
+  const [crises, setCrises] = useState<CrisisEvent[]>(() => storage.getCrises());
+  const [crisisOpen, setCrisisOpen] = useState(false);
+  const [breathingOpen, setBreathingOpen] = useState(false);
+  const [fallbackState, setFallbackState] = useState<"online" | "fallback">("online");
 
-  const languages: Language[] = ["en", "my", "th", "ar"];
-  const handleLanguageSwitch = () => {
-    const currentIndex = languages.indexOf(lang);
-    const nextIndex = (currentIndex + 1) % languages.length;
-    setLang(languages[nextIndex]);
+  // Seed starter habits on first launch.
+  useEffect(() => {
+    if (profile && habits.length === 0) {
+      const starter: Habit[] = [
+        {
+          id: newId(),
+          title: "Morning breathing",
+          emoji: "🧘",
+          goal: "mindfulness",
+          targetPerWeek: 5,
+          completedThisWeek: 0,
+          history: [],
+        },
+        {
+          id: newId(),
+          title: "10-minute walk",
+          emoji: "🏃",
+          goal: "movement",
+          targetPerWeek: 4,
+          completedThisWeek: 0,
+          history: [],
+        },
+        {
+          id: newId(),
+          title: "Hydrate before meals",
+          emoji: "💧",
+          goal: "hydration",
+          targetPerWeek: 7,
+          completedThisWeek: 0,
+          history: [],
+        },
+      ];
+      setHabits(starter);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile]);
+
+  // Persist on change.
+  useEffect(() => {
+    if (profile) storage.setProfile(profile);
+  }, [profile]);
+  useEffect(() => storage.setChat(messages), [messages]);
+  useEffect(() => storage.setSessions(sessions), [sessions]);
+  useEffect(() => storage.setHabits(habits), [habits]);
+  useEffect(() => storage.setVideos(videos), [videos]);
+  useEffect(() => storage.setCrises(crises), [crises]);
+
+  // Monitor breaker state every few seconds so the header reflects reality.
+  useEffect(() => {
+    const id = setInterval(() => {
+      setFallbackState(getBreakerState().status === "closed" ? "online" : "fallback");
+    }, 3000);
+    return () => clearInterval(id);
+  }, []);
+
+  const handleLanguage = (next: Language) => {
+    setLang(next);
+    if (profile) setProfile({ ...profile, preferredLanguage: next });
   };
 
-  return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-indigo-50/80 via-blue-50/80 to-purple-50/80 text-slate-900 font-sans selection:bg-indigo-100">
-      {/* Header */}
-      <header className="bg-white/60 backdrop-blur-xl border-b border-white/50 px-5 py-4 flex items-center justify-between shrink-0 sticky top-0 z-10 shadow-sm">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent tracking-tight">CareMate SG</h1>
-        <button
-          onClick={handleLanguageSwitch}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 shadow-sm border border-white/50 text-sm font-semibold hover:bg-white transition-all active:scale-95"
-        >
-          <Languages className="w-4 h-4 text-indigo-500" />
-          {lang.toUpperCase()}
-        </button>
-      </header>
+  const handleSessionLogged = (durationSec: number) => {
+    const session: WellnessSession = {
+      id: newId(),
+      kind: tab === "video" ? "video" : tab === "habits" ? "habit" : "chat",
+      title: tab === "video" ? "Video check-in" : tab === "habits" ? "Habit done" : "Coach chat",
+      summary: "",
+      tags: profile ? profile.wellnessGoals : [],
+      durationSec,
+      createdAtISO: new Date().toISOString(),
+      synced: false,
+    };
+    setSessions((prev) => [session, ...prev].slice(0, 100));
+  };
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto pb-20">
-        {activeTab === "schedule" && <ScheduleView lang={lang} />}
-        {activeTab === "medication" && <MedicationView lang={lang} />}
-        {activeTab === "diet" && <DietView lang={lang} />}
-        {activeTab === "guidance" && <GuidanceView lang={lang} />}
-        {activeTab === "assistant" && <AssistantView lang={lang} />}
-      </main>
+  const handleCrisis = (rawText?: string) => {
+    setCrisisOpen(true);
+    const event: CrisisEvent = {
+      id: newId(),
+      triggerHash: hashForAudit(rawText ?? Date.now().toString()),
+      language: lang,
+      createdAtISO: new Date().toISOString(),
+    };
+    setCrises((prev) => [event, ...prev].slice(0, 50));
+  };
 
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/70 backdrop-blur-xl border-t border-white/50 flex items-center justify-around pb-safe pt-2 px-2 z-20 shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
-        <NavItem
-          icon={<Calendar className="w-5 h-5" />}
-          label={t("schedule")}
-          isActive={activeTab === "schedule"}
-          onClick={() => setActiveTab("schedule")}
-        />
-        <NavItem
-          icon={<Pill className="w-5 h-5" />}
-          label={t("medication")}
-          isActive={activeTab === "medication"}
-          onClick={() => setActiveTab("medication")}
-        />
-        <NavItem
-          icon={<Utensils className="w-5 h-5" />}
-          label={t("diet")}
-          isActive={activeTab === "diet"}
-          onClick={() => setActiveTab("diet")}
-        />
-        <NavItem
-          icon={<GraduationCap className="w-5 h-5" />}
-          label={t("guidance")}
-          isActive={activeTab === "guidance"}
-          onClick={() => setActiveTab("guidance")}
-        />
-        <NavItem
-          icon={<Bot className="w-5 h-5" />}
-          label={t("assistant")}
-          isActive={activeTab === "assistant"}
-          onClick={() => setActiveTab("assistant")}
-        />
-      </nav>
-    </div>
-  );
-}
+  const handleDeleteData = () => {
+    storage.clear();
+    setProfile(null);
+    setMessages([]);
+    setSessions([]);
+    setHabits([]);
+    setVideos([]);
+    setCrises([]);
+  };
 
-function NavItem({
-  icon,
-  label,
-  isActive,
-  onClick,
-}: {
-  icon: ReactNode;
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "flex flex-col items-center justify-center w-full py-2 gap-1 transition-all active:scale-95",
-        isActive ? "text-indigo-600" : "text-slate-400 hover:text-slate-600",
-      )}
-    >
-      <div className={cn(
-        "p-1.5 rounded-xl transition-all duration-300", 
-        isActive ? "bg-gradient-to-br from-indigo-500 to-purple-500 text-white shadow-md shadow-indigo-200" : "bg-transparent"
-      )}>
-        {icon}
+  const activeView: ReactNode = useMemo(() => {
+    if (!profile) return null;
+    switch (tab) {
+      case "home":
+        return (
+          <HomeView
+            lang={lang}
+            profile={profile}
+            habits={habits}
+            sessions={sessions}
+            onStartBreathing={() => setBreathingOpen(true)}
+            onOpenChat={() => setTab("chat")}
+            onMoodLogged={(score) => {
+              handleSessionLogged(30);
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: newId(),
+                  role: "system",
+                  content: `User mood self-report: ${score}/5`,
+                  createdAtISO: new Date().toISOString(),
+                },
+              ]);
+            }}
+          />
+        );
+      case "chat":
+        return (
+          <ChatView
+            lang={lang}
+            profile={profile}
+            messages={messages}
+            onMessagesChange={setMessages}
+            onCrisis={() => handleCrisis()}
+            onBreathing={() => setBreathingOpen(true)}
+            onSessionLogged={handleSessionLogged}
+          />
+        );
+      case "video":
+        return (
+          <VideoView
+            lang={lang}
+            profile={profile}
+            recent={videos}
+            onNewAnalysis={(analysis) => {
+              setVideos((prev) => [analysis, ...prev].slice(0, 20));
+              handleSessionLogged(analysis.durationSec);
+            }}
+          />
+        );
+      case "habits":
+        return (
+          <HabitsView
+            lang={lang}
+            profile={profile}
+            habits={habits}
+            onHabitsChange={setHabits}
+            onProfileChange={setProfile}
+            onSessionLogged={handleSessionLogged}
+          />
+        );
+      case "profile":
+        return (
+          <ProfileView
+            lang={lang}
+            profile={profile}
+            onProfileChange={setProfile}
+            onDeleteData={handleDeleteData}
+            onLanguageChange={handleLanguage}
+          />
+        );
+      default:
+        return null;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, profile, lang, habits, sessions, messages, videos]);
+
+  if (!profile) {
+    return (
+      <div className="relative min-h-screen text-slate-900 font-sans selection:bg-indigo-100">
+        <AmbientBackdrop />
+        <OnboardingView
+          lang={lang}
+          onLanguageChange={handleLanguage}
+          onComplete={(p) => {
+            setProfile(p);
+            setLang(p.preferredLanguage);
+          }}
+        />
       </div>
-      <span className={cn("text-[10px] font-semibold tracking-wide", isActive ? "text-indigo-600" : "")}>{label}</span>
-    </button>
+    );
+  }
+
+  return (
+    <div className="relative min-h-screen text-slate-900 font-sans selection:bg-indigo-100">
+      <AmbientBackdrop />
+      <div className="max-w-md mx-auto">
+        <VitalHeader lang={lang} onLanguageChange={handleLanguage} onlineFallback={fallbackState} />
+        <main>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tab}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {activeView}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
+
+      <TabBar active={tab} onChange={setTab} lang={lang} />
+      <CrisisModal
+        open={crisisOpen}
+        lang={lang}
+        onClose={() => setCrisisOpen(false)}
+        onBreathing={() => {
+          setCrisisOpen(false);
+          setBreathingOpen(true);
+        }}
+      />
+      <BreathingOverlay open={breathingOpen} lang={lang} onClose={() => setBreathingOpen(false)} />
+    </div>
   );
 }
