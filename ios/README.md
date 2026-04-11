@@ -35,25 +35,40 @@ SHA-256 digests via `hashForAudit`.
 ## Project layout
 
 ```
-VitalPathAI/
-├── VitalPathApp.swift            # @main + SwiftData container
-├── Models/Models.swift           # SwiftData models
-├── Services/SafetyValidator.swift
-├── Networking/GraphQLClient.swift
-├── ViewModels/ChatViewModel.swift
-└── Views/
-    ├── RootView.swift            # Glass tab shell + ambient backdrop
-    ├── HomeView.swift            # Streak ring, mood, focus grid
-    ├── ChatView.swift            # Coach bubbles, typing, safety notice
-    ├── VisionView.swift          # Meal / movement analysis
-    ├── HabitsView.swift          # Habit list + freeze streak
-    ├── ProfileView.swift         # Preferences, language, privacy
-    ├── CrisisModal.swift         # Localized crisis hotlines
-    └── BreathingOverlay.swift    # Animated box-breathing overlay
+ios/
+├── VitalPathAI.xcodeproj/        # Xcode project (open this)
+│   ├── project.pbxproj
+│   ├── project.xcworkspace/
+│   └── xcshareddata/xcschemes/VitalPathAI.xcscheme
+└── VitalPathAI/
+    ├── VitalPathApp.swift        # @main + SwiftData container
+    ├── Models/Models.swift       # SwiftData models
+    ├── Services/SafetyValidator.swift
+    ├── Networking/GraphQLClient.swift
+    ├── ViewModels/ChatViewModel.swift
+    ├── Views/
+    │   ├── RootView.swift        # Glass tab shell + ambient backdrop
+    │   ├── HomeView.swift        # Streak ring, mood, focus grid
+    │   ├── ChatView.swift        # Coach bubbles, typing, safety notice
+    │   ├── VisionView.swift      # Meal / movement analysis
+    │   ├── HabitsView.swift      # Habit list + freeze streak
+    │   ├── ProfileView.swift     # Preferences, language, privacy
+    │   ├── CrisisModal.swift     # Localized crisis hotlines
+    │   └── BreathingOverlay.swift
+    ├── Assets.xcassets/          # AppIcon + AccentColor
+    └── Preview Content/
+        └── Preview Assets.xcassets
 ```
 
 ## Running
 
-Create a new Xcode project targeting iOS 17+, drag `ios/VitalPathAI` into the
-project, point the GraphQL client at your backend, and set your Supabase JWT
-in the token provider.
+Open `ios/VitalPathAI.xcodeproj` in Xcode 15 or later. The project targets
+iOS 17+, uses `GENERATE_INFOPLIST_FILE = YES` (no hand-edited `Info.plist`),
+and ships a shared scheme so `xcodebuild -scheme VitalPathAI` works out of
+the box. Bundle identifier: `ai.vitalpath.VitalPathAI`.
+
+Before shipping:
+
+1. Point `GraphQLClient` at your backend (see `Views/ChatView.swift` init).
+2. Wire a Supabase JWT provider into `ChatViewModel`'s `tokenProvider`.
+3. Replace the placeholder `AppIcon` in `Assets.xcassets` with your artwork.
