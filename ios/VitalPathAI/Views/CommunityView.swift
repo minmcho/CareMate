@@ -91,7 +91,7 @@ struct CommunityView: View {
                                                    endPoint: .trailing))
                     : AnyShapeStyle(Color.white.opacity(0.6))
                 )
-                .foregroundStyle(isOn ? .white : .primary)
+                .foregroundStyle(isOn ? Color.white : Color.primary)
                 .clipShape(Capsule())
                 .overlay(
                     Capsule().stroke(Color.white.opacity(0.8), lineWidth: 1)
@@ -167,7 +167,7 @@ private struct TopicRow: View {
                                 Text(topic.title).font(.headline)
                                 if topic.isOfficial {
                                     Image(systemName: "checkmark.seal.fill")
-                                        .foregroundStyle(.emerald)
+                                        .foregroundStyle(Color.emerald)
                                         .font(.caption)
                                 }
                             }
@@ -195,7 +195,7 @@ private struct TopicRow: View {
                                                            startPoint: .leading,
                                                            endPoint: .trailing))
                         )
-                        .foregroundStyle(topic.joined ? .secondary : .white)
+                        .foregroundStyle(topic.joined ? Color.secondary : Color.white)
                         .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
@@ -271,7 +271,7 @@ private struct TopicDetailView: View {
                                                                startPoint: .leading,
                                                                endPoint: .trailing))
                             )
-                            .foregroundStyle(topic.joined ? .secondary : .white)
+                            .foregroundStyle(topic.joined ? Color.secondary : Color.white)
                             .clipShape(Capsule())
                     }
                     .buttonStyle(.plain)
