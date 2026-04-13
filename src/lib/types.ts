@@ -89,3 +89,52 @@ export interface CircuitBreakerState {
   failures: number;
   openedAtMs: number;
 }
+
+// ---------------------------------------------------------------------------
+// Journaling
+// ---------------------------------------------------------------------------
+
+export interface JournalEntry {
+  id: string;
+  title: string;
+  content: string;
+  contentPreview: string;
+  moodScore?: number; // 1..5
+  tags: WellnessGoal[];
+  createdAtISO: string;
+  updatedAtISO: string;
+}
+
+// ---------------------------------------------------------------------------
+// Knowledge-sharing community
+// ---------------------------------------------------------------------------
+
+export interface CommunityTopic {
+  id: string;
+  title: string;
+  description: string;
+  category: WellnessGoal;
+  icon: string;
+  memberCount: number;
+  isOfficial: boolean;
+  joined: boolean;
+}
+
+export interface CommunityPost {
+  id: string;
+  topicId: string;
+  authorName: string;
+  content: string;
+  likeCount: number;
+  replyCount: number;
+  safetyFlags: string[];
+  createdAtISO: string;
+}
+
+export interface CommunityReply {
+  id: string;
+  postId: string;
+  authorName: string;
+  content: string;
+  createdAtISO: string;
+}

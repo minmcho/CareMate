@@ -22,6 +22,8 @@
 		0200000000000000000000AD /* BreathingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000000AD /* BreathingOverlay.swift */; };
 		0200000000000000000000AE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000000AE /* Assets.xcassets */; };
 		0200000000000000000000AF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000000AF /* Preview Assets.xcassets */; };
+		0200000000000000000001A1 /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A1 /* JournalView.swift */; };
+		0200000000000000000001A2 /* CommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A2 /* CommunityView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +43,8 @@
 		0100000000000000000000AE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0100000000000000000000AF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		0100000000000000000000B0 /* VitalPathAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VitalPathAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0100000000000000000001A1 /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalView.swift; sourceTree = "<group>"; };
+		0100000000000000000001A2 /* CommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,6 +130,8 @@
 				0100000000000000000000A9 /* VisionView.swift */,
 				0100000000000000000000AA /* HabitsView.swift */,
 				0100000000000000000000AB /* ProfileView.swift */,
+				0100000000000000000001A1 /* JournalView.swift */,
+				0100000000000000000001A2 /* CommunityView.swift */,
 				0100000000000000000000AC /* CrisisModal.swift */,
 				0100000000000000000000AD /* BreathingOverlay.swift */,
 			);
@@ -221,6 +227,8 @@
 				0200000000000000000000A9 /* VisionView.swift in Sources */,
 				0200000000000000000000AA /* HabitsView.swift in Sources */,
 				0200000000000000000000AB /* ProfileView.swift in Sources */,
+				0200000000000000000001A1 /* JournalView.swift in Sources */,
+				0200000000000000000001A2 /* CommunityView.swift in Sources */,
 				0200000000000000000000AC /* CrisisModal.swift in Sources */,
 				0200000000000000000000AD /* BreathingOverlay.swift in Sources */,
 			);

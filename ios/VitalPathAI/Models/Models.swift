@@ -186,3 +186,108 @@ final class CrisisAudit {
         self.createdAt = Date()
     }
 }
+
+// MARK: - Journal
+
+@Model
+final class JournalEntry {
+    @Attribute(.unique) var id: UUID
+    var title: String
+    var content: String
+    var mood: Int        // 1…5
+    var tags: [String]   // WellnessGoal raw values
+    var createdAt: Date
+    var updatedAt: Date
+
+    init(title: String, content: String, mood: Int = 3, tags: [String] = []) {
+        self.id = UUID()
+        self.title = title
+        self.content = content
+        self.mood = mood
+        self.tags = tags
+        self.createdAt = Date()
+        self.updatedAt = Date()
+    }
+}
+
+// MARK: - Community (knowledge sharing)
+
+@Model
+final class CommunityTopic {
+    @Attribute(.unique) var id: UUID
+    var slug: String
+    var title: String
+    var summary: String
+    var category: String     // WellnessGoal raw value
+    var icon: String
+    var memberCount: Int
+    var isOfficial: Bool
+    var joined: Bool
+
+    init(
+        slug: String,
+        title: String,
+        summary: String,
+        category: WellnessGoal,
+        icon: String,
+        memberCount: Int = 0,
+        isOfficial: Bool = true,
+        joined: Bool = false
+    ) {
+        self.id = UUID()
+        self.slug = slug
+        self.title = title
+        self.summary = summary
+        self.category = category.rawValue
+        self.icon = icon
+        self.memberCount = memberCount
+        self.isOfficial = isOfficial
+        self.joined = joined
+    }
+}
+
+@Model
+final class CommunityPost {
+    @Attribute(.unique) var id: UUID
+    var topicSlug: String
+    var authorName: String
+    var content: String
+    var likeCount: Int
+    var replyCount: Int
+    var safetyFlags: [String]
+    var isHidden: Bool
+    var createdAt: Date
+
+    init(topicSlug: String, authorName: String, content: String) {
+        self.id = UUID()
+        self.topicSlug = topicSlug
+        self.authorName = authorName
+        self.content = content
+        self.likeCount = 0
+        self.replyCount = 0
+        self.safetyFlags = []
+        self.isHidden = false
+        self.createdAt = Date()
+    }
+}
+
+@Model
+final class CommunityReply {
+    @Attribute(.unique) var id: UUID
+    var postID: UUID
+    var authorName: String
+    var content: String
+    var safetyFlags: [String]
+    var isHidden: Bool
+    var createdAt: Date
+
+    init(postID: UUID, authorName: String, content: String) {
+        self.id = UUID()
+        self.postID = postID
+        self.authorName = authorName
+        self.content = content
+        self.safetyFlags = []
+        self.isHidden = false
+        self.createdAt = Date()
+    }
+}

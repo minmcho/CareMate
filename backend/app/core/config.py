@@ -47,6 +47,13 @@ class Settings(BaseSettings):
     enable_crisis_escalation: bool = Field(default=True)
     enable_medical_rewrite: bool = Field(default=True)
 
+    # --- Encryption at rest --------------------------------------------
+    encryption_key: str = Field(default="change-me-generate-with-fernet")
+
+    # --- Rate limiting --------------------------------------------------
+    rate_limit_window: int = Field(default=60)
+    rate_limit_max: int = Field(default=120)
+
     # --- CORS -----------------------------------------------------------
     cors_origins: List[str] = Field(
         default_factory=lambda: ["http://localhost:3000", "http://localhost:8080"]

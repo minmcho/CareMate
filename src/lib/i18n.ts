@@ -114,6 +114,27 @@ type Dictionary = {
   deleteData: string;
   confirmDelete: string;
   welcomeBack: string;
+  // Journal
+  journal: string;
+  newEntry: string;
+  journalTitle: string;
+  journalContent: string;
+  journalEmpty: string;
+  save: string;
+  edit: string;
+  delete: string;
+  // Community
+  community: string;
+  topics: string;
+  joinTopic: string;
+  leaveTopic: string;
+  members: string;
+  writePost: string;
+  postPlaceholder: string;
+  replies: string;
+  replyPlaceholder: string;
+  noPosts: string;
+  official: string;
 };
 
 const en: Dictionary = {
@@ -225,6 +246,25 @@ const en: Dictionary = {
   deleteData: "Delete local data",
   confirmDelete: "Delete all local data?",
   welcomeBack: "Welcome back",
+  journal: "Journal",
+  newEntry: "New entry",
+  journalTitle: "Title",
+  journalContent: "Write your thoughts…",
+  journalEmpty: "No journal entries yet. Tap + to begin.",
+  save: "Save",
+  edit: "Edit",
+  delete: "Delete",
+  community: "Community",
+  topics: "Topics",
+  joinTopic: "Join",
+  leaveTopic: "Leave",
+  members: "members",
+  writePost: "Write a post",
+  postPlaceholder: "Share something helpful…",
+  replies: "Replies",
+  replyPlaceholder: "Write a reply…",
+  noPosts: "No posts yet. Be the first to share!",
+  official: "Official",
 };
 
 const my: Dictionary = {

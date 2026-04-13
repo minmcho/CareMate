@@ -22,7 +22,11 @@ struct VitalPathApp: App {
             Habit.self,
             ChatMessage.self,
             VideoAnalysis.self,
-            CrisisAudit.self
+            CrisisAudit.self,
+            JournalEntry.self,
+            CommunityTopic.self,
+            CommunityPost.self,
+            CommunityReply.self
         ])
     }
 }

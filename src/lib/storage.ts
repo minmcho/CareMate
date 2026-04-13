@@ -8,8 +8,11 @@
 
 import type {
   ChatMessage,
+  CommunityPost,
+  CommunityTopic,
   CrisisEvent,
   Habit,
+  JournalEntry,
   VideoAnalysis,
   WellnessProfile,
   WellnessSession,
@@ -24,6 +27,9 @@ const keys = {
   habits: `${NS}.habits`,
   videos: `${NS}.videos`,
   crises: `${NS}.crises`,
+  journal: `${NS}.journal`,
+  communityTopics: `${NS}.communityTopics`,
+  communityPosts: `${NS}.communityPosts`,
 } as const;
 
 function read<T>(key: string, fallback: T): T {
@@ -88,6 +94,27 @@ export const storage = {
   },
   setCrises(c: CrisisEvent[]): void {
     write(keys.crises, c);
+  },
+
+  getJournal(): JournalEntry[] {
+    return read<JournalEntry[]>(keys.journal, []);
+  },
+  setJournal(j: JournalEntry[]): void {
+    write(keys.journal, j);
+  },
+
+  getCommunityTopics(): CommunityTopic[] {
+    return read<CommunityTopic[]>(keys.communityTopics, []);
+  },
+  setCommunityTopics(t: CommunityTopic[]): void {
+    write(keys.communityTopics, t);
+  },
+
+  getCommunityPosts(): CommunityPost[] {
+    return read<CommunityPost[]>(keys.communityPosts, []);
+  },
+  setCommunityPosts(p: CommunityPost[]): void {
+    write(keys.communityPosts, p);
   },
 };
 

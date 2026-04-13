@@ -20,10 +20,15 @@ import ChatView from "./views/ChatView";
 import VideoView from "./views/VideoView";
 import HabitsView from "./views/HabitsView";
 import ProfileView from "./views/ProfileView";
+import JournalView from "./views/JournalView";
+import CommunityView from "./views/CommunityView";
 import type {
   ChatMessage,
+  CommunityPost,
+  CommunityTopic,
   CrisisEvent,
   Habit,
+  JournalEntry,
   Language,
   VideoAnalysis,
   WellnessProfile,
@@ -42,6 +47,9 @@ export default function App() {
   const [habits, setHabits] = useState<Habit[]>(() => storage.getHabits());
   const [videos, setVideos] = useState<VideoAnalysis[]>(() => storage.getVideos());
   const [crises, setCrises] = useState<CrisisEvent[]>(() => storage.getCrises());
+  const [journal, setJournal] = useState<JournalEntry[]>(() => storage.getJournal());
+  const [communityTopics, setCommunityTopics] = useState<CommunityTopic[]>(() => storage.getCommunityTopics());
+  const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>(() => storage.getCommunityPosts());
   const [crisisOpen, setCrisisOpen] = useState(false);
   const [breathingOpen, setBreathingOpen] = useState(false);
   const [fallbackState, setFallbackState] = useState<"online" | "fallback">("online");
@@ -92,6 +100,9 @@ export default function App() {
   useEffect(() => storage.setHabits(habits), [habits]);
   useEffect(() => storage.setVideos(videos), [videos]);
   useEffect(() => storage.setCrises(crises), [crises]);
+  useEffect(() => storage.setJournal(journal), [journal]);
+  useEffect(() => storage.setCommunityTopics(communityTopics), [communityTopics]);
+  useEffect(() => storage.setCommunityPosts(communityPosts), [communityPosts]);
 
   // Monitor breaker state every few seconds so the header reflects reality.
   useEffect(() => {
@@ -139,6 +150,9 @@ export default function App() {
     setHabits([]);
     setVideos([]);
     setCrises([]);
+    setJournal([]);
+    setCommunityTopics([]);
+    setCommunityPosts([]);
   };
 
   const activeView: ReactNode = useMemo(() => {
@@ -202,6 +216,26 @@ export default function App() {
             onSessionLogged={handleSessionLogged}
           />
         );
+      case "journal":
+        return (
+          <JournalView
+            lang={lang}
+            profile={profile}
+            entries={journal}
+            onEntriesChange={setJournal}
+          />
+        );
+      case "community":
+        return (
+          <CommunityView
+            lang={lang}
+            profile={profile}
+            topics={communityTopics}
+            posts={communityPosts}
+            onTopicsChange={setCommunityTopics}
+            onPostsChange={setCommunityPosts}
+          />
+        );
       case "profile":
         return (
           <ProfileView
@@ -216,7 +250,7 @@ export default function App() {
         return null;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, profile, lang, habits, sessions, messages, videos]);
+  }, [tab, profile, lang, habits, sessions, messages, videos, journal, communityTopics, communityPosts]);
 
   if (!profile) {
     return (
