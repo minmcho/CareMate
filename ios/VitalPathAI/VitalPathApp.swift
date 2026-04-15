@@ -38,6 +38,8 @@ final class AppState {
     var crisisVisible: Bool = false
     var breathingVisible: Bool = false
     var onlineMode: OnlineMode = .online
+    /// Technique the overlay should play — defaults to box breathing.
+    var breathingTechniqueID: String = BreathworkCatalog.default.id
 
     enum OnlineMode { case online, fallback }
 }

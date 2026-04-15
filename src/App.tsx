@@ -22,15 +22,19 @@ import HabitsView from "./views/HabitsView";
 import ProfileView from "./views/ProfileView";
 import JournalView from "./views/JournalView";
 import CommunityView from "./views/CommunityView";
+import PlanView from "./views/PlanView";
 import type {
+  BreathworkTechnique,
   ChatMessage,
   CommunityPost,
   CommunityTopic,
   CrisisEvent,
+  DailyPlan,
   Habit,
   JournalEntry,
   Language,
   VideoAnalysis,
+  WeeklyPlan,
   WellnessProfile,
   WellnessSession,
 } from "./lib/types";
@@ -50,8 +54,11 @@ export default function App() {
   const [journal, setJournal] = useState<JournalEntry[]>(() => storage.getJournal());
   const [communityTopics, setCommunityTopics] = useState<CommunityTopic[]>(() => storage.getCommunityTopics());
   const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>(() => storage.getCommunityPosts());
+  const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(() => storage.getDailyPlan());
+  const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlan | null>(() => storage.getWeeklyPlan());
   const [crisisOpen, setCrisisOpen] = useState(false);
   const [breathingOpen, setBreathingOpen] = useState(false);
+  const [breathTechniqueId, setBreathTechniqueId] = useState<string | undefined>(undefined);
   const [fallbackState, setFallbackState] = useState<"online" | "fallback">("online");
 
   // Seed starter habits on first launch.
@@ -103,6 +110,8 @@ export default function App() {
   useEffect(() => storage.setJournal(journal), [journal]);
   useEffect(() => storage.setCommunityTopics(communityTopics), [communityTopics]);
   useEffect(() => storage.setCommunityPosts(communityPosts), [communityPosts]);
+  useEffect(() => storage.setDailyPlan(dailyPlan), [dailyPlan]);
+  useEffect(() => storage.setWeeklyPlan(weeklyPlan), [weeklyPlan]);
 
   // Monitor breaker state every few seconds so the header reflects reality.
   useEffect(() => {
@@ -153,6 +162,13 @@ export default function App() {
     setJournal([]);
     setCommunityTopics([]);
     setCommunityPosts([]);
+    setDailyPlan(null);
+    setWeeklyPlan(null);
+  };
+
+  const handleStartBreathwork = (technique?: BreathworkTechnique) => {
+    setBreathTechniqueId(technique?.id);
+    setBreathingOpen(true);
   };
 
   const activeView: ReactNode = useMemo(() => {
@@ -165,7 +181,7 @@ export default function App() {
             profile={profile}
             habits={habits}
             sessions={sessions}
-            onStartBreathing={() => setBreathingOpen(true)}
+            onStartBreathing={() => handleStartBreathwork()}
             onOpenChat={() => setTab("chat")}
             onMoodLogged={(score) => {
               handleSessionLogged(30);
@@ -181,6 +197,19 @@ export default function App() {
             }}
           />
         );
+      case "plan":
+        return (
+          <PlanView
+            lang={lang}
+            profile={profile}
+            dailyPlan={dailyPlan}
+            weeklyPlan={weeklyPlan}
+            onDailyPlanChange={setDailyPlan}
+            onWeeklyPlanChange={setWeeklyPlan}
+            onStartBreathwork={handleStartBreathwork}
+            onSessionLogged={handleSessionLogged}
+          />
+        );
       case "chat":
         return (
           <ChatView
@@ -189,7 +218,7 @@ export default function App() {
             messages={messages}
             onMessagesChange={setMessages}
             onCrisis={() => handleCrisis()}
-            onBreathing={() => setBreathingOpen(true)}
+            onBreathing={() => handleStartBreathwork()}
             onSessionLogged={handleSessionLogged}
           />
         );
@@ -250,7 +279,7 @@ export default function App() {
         return null;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, profile, lang, habits, sessions, messages, videos, journal, communityTopics, communityPosts]);
+  }, [tab, profile, lang, habits, sessions, messages, videos, journal, communityTopics, communityPosts, dailyPlan, weeklyPlan]);
 
   if (!profile) {
     return (
@@ -295,10 +324,16 @@ export default function App() {
         onClose={() => setCrisisOpen(false)}
         onBreathing={() => {
           setCrisisOpen(false);
-          setBreathingOpen(true);
+          handleStartBreathwork();
         }}
       />
-      <BreathingOverlay open={breathingOpen} lang={lang} onClose={() => setBreathingOpen(false)} />
+      <BreathingOverlay
+        open={breathingOpen}
+        lang={lang}
+        techniqueId={breathTechniqueId}
+        onClose={() => setBreathingOpen(false)}
+        onFinish={(tech) => handleSessionLogged(tech.rounds * tech.pattern.reduce((a, b) => a + b, 0))}
+      />
     </div>
   );
 }

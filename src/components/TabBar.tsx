@@ -1,11 +1,19 @@
 import { ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Home, MessageCircle, Video, Flame, User, BookOpen, Users } from "lucide-react";
+import { Home, MessageCircle, Video, Flame, User, BookOpen, Users, Calendar } from "lucide-react";
 import { cn } from "../lib/utils";
 import type { Language } from "../lib/types";
 import { useTranslation } from "../lib/i18n";
 
-export type TabKey = "home" | "chat" | "video" | "habits" | "journal" | "community" | "profile";
+export type TabKey =
+  | "home"
+  | "plan"
+  | "chat"
+  | "video"
+  | "habits"
+  | "journal"
+  | "community"
+  | "profile";
 
 interface TabBarProps {
   active: TabKey;
@@ -17,6 +25,7 @@ export default function TabBar({ active, onChange, lang }: TabBarProps) {
   const t = useTranslation(lang);
   const items: { key: TabKey; label: string; icon: ReactNode }[] = [
     { key: "home", label: t("home"), icon: <Home className="w-[22px] h-[22px]" /> },
+    { key: "plan", label: t("plan"), icon: <Calendar className="w-[22px] h-[22px]" /> },
     { key: "chat", label: t("chat"), icon: <MessageCircle className="w-[22px] h-[22px]" /> },
     { key: "video", label: t("video"), icon: <Video className="w-[22px] h-[22px]" /> },
     { key: "habits", label: t("habits"), icon: <Flame className="w-[22px] h-[22px]" /> },

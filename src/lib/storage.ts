@@ -11,9 +11,11 @@ import type {
   CommunityPost,
   CommunityTopic,
   CrisisEvent,
+  DailyPlan,
   Habit,
   JournalEntry,
   VideoAnalysis,
+  WeeklyPlan,
   WellnessProfile,
   WellnessSession,
 } from "./types";
@@ -30,6 +32,8 @@ const keys = {
   journal: `${NS}.journal`,
   communityTopics: `${NS}.communityTopics`,
   communityPosts: `${NS}.communityPosts`,
+  dailyPlan: `${NS}.dailyPlan`,
+  weeklyPlan: `${NS}.weeklyPlan`,
 } as const;
 
 function read<T>(key: string, fallback: T): T {
@@ -115,6 +119,20 @@ export const storage = {
   },
   setCommunityPosts(p: CommunityPost[]): void {
     write(keys.communityPosts, p);
+  },
+
+  getDailyPlan(): DailyPlan | null {
+    return read<DailyPlan | null>(keys.dailyPlan, null);
+  },
+  setDailyPlan(p: DailyPlan | null): void {
+    write(keys.dailyPlan, p);
+  },
+
+  getWeeklyPlan(): WeeklyPlan | null {
+    return read<WeeklyPlan | null>(keys.weeklyPlan, null);
+  },
+  setWeeklyPlan(p: WeeklyPlan | null): void {
+    write(keys.weeklyPlan, p);
   },
 };
 

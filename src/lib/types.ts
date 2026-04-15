@@ -138,3 +138,60 @@ export interface CommunityReply {
   content: string;
   createdAtISO: string;
 }
+
+// ---------------------------------------------------------------------------
+// Breathwork + wellness planning
+// ---------------------------------------------------------------------------
+
+export type BreathPhase = "inhale" | "hold" | "exhale" | "hold2";
+
+export interface BreathworkTechnique {
+  id: string;
+  name: string;
+  summary: string;
+  /** Phase durations in seconds, same length as `phases`. */
+  pattern: number[];
+  phases: BreathPhase[];
+  rounds: number;
+  benefits: string[];
+  goal: WellnessGoal;
+}
+
+export type PlanTimeOfDay = "morning" | "midday" | "evening" | "night";
+
+export type PlanKind =
+  | "breath"
+  | "movement"
+  | "mindfulness"
+  | "hydration"
+  | "nutrition"
+  | "reflection"
+  | "sleep";
+
+export interface PlanItem {
+  id: string;
+  time: PlanTimeOfDay;
+  kind: PlanKind;
+  title: string;
+  summary: string;
+  durationMin: number;
+  goal: WellnessGoal;
+  /** Present when this item launches a specific breathwork technique. */
+  techniqueId?: string;
+  completed: boolean;
+}
+
+export interface DailyPlan {
+  id: string;
+  /** YYYY-MM-DD */
+  dateISO: string;
+  items: PlanItem[];
+}
+
+export interface WeeklyPlan {
+  id: string;
+  /** YYYY-MM-DD of the Monday that begins this week. */
+  weekStartISO: string;
+  focus: WellnessGoal[];
+  days: DailyPlan[];
+}

@@ -24,6 +24,8 @@
 		0200000000000000000000AF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000000AF /* Preview Assets.xcassets */; };
 		0200000000000000000001A1 /* JournalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A1 /* JournalView.swift */; };
 		0200000000000000000001A2 /* CommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A2 /* CommunityView.swift */; };
+		0200000000000000000001A3 /* Breathwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A3 /* Breathwork.swift */; };
+		0200000000000000000001A4 /* PlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A4 /* PlanView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -45,6 +47,8 @@
 		0100000000000000000000B0 /* VitalPathAI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VitalPathAI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0100000000000000000001A1 /* JournalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalView.swift; sourceTree = "<group>"; };
 		0100000000000000000001A2 /* CommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityView.swift; sourceTree = "<group>"; };
+		0100000000000000000001A3 /* Breathwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Breathwork.swift; sourceTree = "<group>"; };
+		0100000000000000000001A4 /* PlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -101,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				0100000000000000000000A3 /* SafetyValidator.swift */,
+				0100000000000000000001A3 /* Breathwork.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -126,6 +131,7 @@
 			children = (
 				0100000000000000000000A6 /* RootView.swift */,
 				0100000000000000000000A7 /* HomeView.swift */,
+				0100000000000000000001A4 /* PlanView.swift */,
 				0100000000000000000000A8 /* ChatView.swift */,
 				0100000000000000000000A9 /* VisionView.swift */,
 				0100000000000000000000AA /* HabitsView.swift */,
@@ -229,6 +235,8 @@
 				0200000000000000000000AB /* ProfileView.swift in Sources */,
 				0200000000000000000001A1 /* JournalView.swift in Sources */,
 				0200000000000000000001A2 /* CommunityView.swift in Sources */,
+				0200000000000000000001A3 /* Breathwork.swift in Sources */,
+				0200000000000000000001A4 /* PlanView.swift in Sources */,
 				0200000000000000000000AC /* CrisisModal.swift in Sources */,
 				0200000000000000000000AD /* BreathingOverlay.swift in Sources */,
 			);

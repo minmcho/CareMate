@@ -135,6 +135,32 @@ type Dictionary = {
   replyPlaceholder: string;
   noPosts: string;
   official: string;
+  // Plan + breathwork
+  plan: string;
+  today: string;
+  week: string;
+  dailyPlan: string;
+  weeklyPlan: string;
+  planFocus: string;
+  markComplete: string;
+  markIncomplete: string;
+  planEmpty: string;
+  regeneratePlan: string;
+  startBreathwork: string;
+  breathwork: string;
+  choosePattern: string;
+  benefits: string;
+  round: string;
+  of: string;
+  startSession: string;
+  finishSession: string;
+  inhale: string;
+  hold: string;
+  exhale: string;
+  morning: string;
+  midday: string;
+  evening: string;
+  night: string;
 };
 
 const en: Dictionary = {
@@ -265,6 +291,31 @@ const en: Dictionary = {
   replyPlaceholder: "Write a reply…",
   noPosts: "No posts yet. Be the first to share!",
   official: "Official",
+  plan: "Plan",
+  today: "Today",
+  week: "Week",
+  dailyPlan: "Today's plan",
+  weeklyPlan: "This week",
+  planFocus: "Focus",
+  markComplete: "Mark complete",
+  markIncomplete: "Mark incomplete",
+  planEmpty: "Tap Regenerate to build today's plan.",
+  regeneratePlan: "Regenerate",
+  startBreathwork: "Start breathwork",
+  breathwork: "Breathwork",
+  choosePattern: "Choose a pattern",
+  benefits: "Benefits",
+  round: "Round",
+  of: "of",
+  startSession: "Start",
+  finishSession: "Finish",
+  inhale: "Inhale",
+  hold: "Hold",
+  exhale: "Exhale",
+  morning: "Morning",
+  midday: "Midday",
+  evening: "Evening",
+  night: "Night",
 };
 
 const my: Dictionary = {
