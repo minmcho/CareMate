@@ -24,15 +24,15 @@ struct HomeView: View {
                         .padding(.horizontal, 16)
                         .padding(.top, 8)
 
-                    VStack(alignment: .leading, spacing: 20) {
+                    VStack(alignment: .leading, spacing: 14) {
                         statsRow
                         moodCard
                         focusSection
                         disclaimerText
                     }
                     .padding(.horizontal, 16)
-                    .padding(.top, 16)
-                    .padding(.bottom, 100)
+                    .padding(.top, 12)
+                    .padding(.bottom, 80)
                 }
             }
             .navigationTitle("VitalPath AI")
@@ -53,7 +53,7 @@ struct HomeView: View {
 
     private var heroCard: some View {
         ZStack(alignment: .bottomLeading) {
-            RoundedRectangle(cornerRadius: 28, style: .continuous)
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .fill(
                     LinearGradient(
                         colors: [Color.indigo, Color.purple, Color.pink.opacity(0.7)],
@@ -62,8 +62,8 @@ struct HomeView: View {
                     )
                 )
                 .frame(maxWidth: .infinity)
-                .frame(height: 190)
-                .shadow(color: .indigo.opacity(0.35), radius: 20, x: 0, y: 10)
+                .frame(height: 148)
+                .shadow(color: .indigo.opacity(0.3), radius: 16, x: 0, y: 8)
 
             // Decorative circles
             Circle()
@@ -109,8 +109,8 @@ struct HomeView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 20)
+            .padding(.horizontal, 18)
+            .padding(.bottom, 14)
         }
         .clipped()
     }
@@ -179,8 +179,8 @@ struct HomeView: View {
                 .minimumScaleFactor(0.8)
         }
         .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .padding(.vertical, 10)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .stroke(Color.white.opacity(0.55), lineWidth: 1)
@@ -215,8 +215,8 @@ struct HomeView: View {
                 }
             }
         }
-        .padding(18)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .padding(14)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 24, style: .continuous)
                 .stroke(Color.white.opacity(0.6), lineWidth: 1)
@@ -367,8 +367,8 @@ struct HomeFocusCard: View {
                         .fixedSize(horizontal: false, vertical: true)
                 }
             }
-            .frame(maxWidth: .infinity, minHeight: 108, alignment: .topLeading)
-            .padding(15)
+            .frame(maxWidth: .infinity, minHeight: 88, alignment: .topLeading)
+            .padding(13)
             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
             .overlay(
                 RoundedRectangle(cornerRadius: 20, style: .continuous)

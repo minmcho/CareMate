@@ -36,9 +36,10 @@ struct JournalView: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 120)
+                .padding(.bottom, 80)
             }
             .navigationTitle("Journal")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {

@@ -48,7 +48,7 @@ struct PlanView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 4)
-                .padding(.bottom, 100)
+                .padding(.bottom, 80)
             }
             .navigationTitle(headerTitle)
             .navigationBarTitleDisplayMode(.inline)

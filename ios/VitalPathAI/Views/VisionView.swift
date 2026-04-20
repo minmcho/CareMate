@@ -25,9 +25,10 @@ struct VisionView: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 120)
+                .padding(.bottom, 80)
             }
             .navigationTitle("Vision")
+            .navigationBarTitleDisplayMode(.inline)
             .scrollContentBackground(.hidden)
         }
     }

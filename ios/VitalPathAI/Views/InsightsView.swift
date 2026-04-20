@@ -49,9 +49,10 @@ struct InsightsView: View {
                     }
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 120)
+                .padding(.bottom, 80)
             }
             .navigationTitle("Insights")
+            .navigationBarTitleDisplayMode(.inline)
             .scrollContentBackground(.hidden)
         }
     }

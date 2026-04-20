@@ -64,7 +64,7 @@ struct ManifestationView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
-                .padding(.bottom, 100)
+                .padding(.bottom, 80)
             }
             .navigationTitle("Manifestation")
             .navigationBarTitleDisplayMode(.inline)
@@ -92,8 +92,8 @@ struct ManifestationView: View {
                     )
                 )
                 .frame(maxWidth: .infinity)
-                .frame(height: 180)
-                .shadow(color: .orange.opacity(0.35), radius: 18, x: 0, y: 8)
+                .frame(height: 148)
+                .shadow(color: .orange.opacity(0.3), radius: 14, x: 0, y: 6)
 
             // Decorative stars
             Text("✨").font(.system(size: 42)).opacity(0.25).offset(x: 260, y: -90)

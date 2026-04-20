@@ -27,9 +27,10 @@ struct CommunityView: View {
                     topicList
                 }
                 .padding(.horizontal, 20)
-                .padding(.bottom, 120)
+                .padding(.bottom, 80)
             }
             .navigationTitle("Community")
+            .navigationBarTitleDisplayMode(.inline)
             .onAppear { seedIfNeeded() }
             .navigationDestination(item: $selectedTopic) { topic in
                 TopicDetailView(

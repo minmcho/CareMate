@@ -123,9 +123,10 @@ struct MoreTabView: View {
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 8)
-                .padding(.bottom, 100)
+                .padding(.bottom, 80)
             }
             .navigationTitle("More")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button { showingEditor = true } label: {
