@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGODB_URL=mongodb://mongo:27017
+      - REDIS_URL=redis://redis:6379
+      - VLLM_BASE_URL=http://vllm:8000/v1
+    depends_on:
+      - mongo
+      - redis
+    volumes:
+      - .:/app
+
+  mongo:
+    image: mongo:7.0
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  redis:
+    image: redis:7.4-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  vllm:
+    image: vllm/vllm-openai:latest
+    runtime: nvidia          # requires NVIDIA Container Toolkit
+    environment:
+      - HUGGING_FACE_HUB_TOKEN=${HF_TOKEN:-}
+    command: >
+      --model mistralai/Mistral-7B-Instruct-v0.3
+      --host 0.0.0.0
+      --port 8000
+      --dtype float16
+    ports:
+      - "8000:8000"
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  mongo_data:
+  redis_data:
+  hf_cache:
