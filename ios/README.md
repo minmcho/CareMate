@@ -53,6 +53,7 @@ ios/
     │   ├── VisionView.swift      # Meal / movement analysis
     │   ├── HabitsView.swift      # Habit list + freeze streak
     │   ├── ProfileView.swift     # Preferences, language, privacy
+    │   ├── AdminView.swift       # Ops metrics + App Store readiness
     │   ├── CrisisModal.swift     # Localized crisis hotlines
     │   └── BreathingOverlay.swift
     ├── Assets.xcassets/          # AppIcon + AccentColor

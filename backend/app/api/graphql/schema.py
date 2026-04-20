@@ -10,7 +10,7 @@ Every resolver:
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import Any, List, Optional
 
 import strawberry
 from fastapi import Depends
@@ -18,6 +18,7 @@ from strawberry.fastapi import GraphQLRouter
 from strawberry.types import Info
 
 from app.services.mcp import CoachMessage, MCPRouter
+from app.services.reasoning_context import ReasoningContextStore
 from app.services.safety import hash_for_audit, scan_user_input, SafetyCategory
 
 
@@ -69,6 +70,38 @@ class CrisisAudit:
     created_at: datetime
 
 
+@strawberry.type
+class ReasoningEvent:
+    event_type: str
+    payload_json: str
+    created_at_iso: str
+
+
+@strawberry.type
+class AdminMetric:
+    key: str
+    label: str
+    value: str
+    trend: str
+
+
+@strawberry.type
+class NicheSpotlight:
+    title: str
+    summary: str
+    audience: str
+    growth_signal: str
+
+
+@strawberry.type
+class PoseAnalysis:
+    id: str
+    posture_score: int
+    behavior_state: str
+    alerts: List[str]
+    created_at: datetime
+
+
 # ---------------------------------------------------------------------------
 # Query / Mutation
 # ---------------------------------------------------------------------------
@@ -98,6 +131,54 @@ class Query:
     async def recent_video_analyses(self, info: Info, limit: int = 10) -> List[VideoAnalysis]:
         return []
 
+    @strawberry.field
+    async def reasoning_context(self, info: Info, limit: int = 20) -> List[ReasoningEvent]:
+        user = info.context["user"]
+        store = ReasoningContextStore()
+        events = store.recent_events(user.user_id, limit=limit)
+        return [
+            ReasoningEvent(
+                event_type=event.event_type,
+                payload_json=str(event.payload),
+                created_at_iso=event.created_at_iso,
+            )
+            for event in events
+        ]
+
+    @strawberry.field
+    async def admin_metrics(self, info: Info) -> List[AdminMetric]:
+        _ = info
+        return [
+            AdminMetric(key="daily_active_users", label="Daily Active Users", value="2,480", trend="+8.6%"),
+            AdminMetric(key="coach_retention", label="7-Day Retention", value="62%", trend="+3.4%"),
+            AdminMetric(key="vision_sessions", label="Vision Sessions/Day", value="1,120", trend="+15.1%"),
+            AdminMetric(key="safety_blocks", label="Safety Interventions", value="14", trend="-11.0%"),
+        ]
+
+    @strawberry.field
+    async def growth_niches(self, info: Info) -> List[NicheSpotlight]:
+        _ = info
+        return [
+            NicheSpotlight(
+                title="Desk Ergonomics Coach",
+                summary="Pose nudges for remote workers with burnout prevention check-ins.",
+                audience="Hybrid workers and freelancers",
+                growth_signal="High recurring weekday usage from posture reminders",
+            ),
+            NicheSpotlight(
+                title="Perimenopause Wellness Support",
+                summary="Sleep, stress, and movement plans with symptom journaling trends.",
+                audience="Women 35-55 seeking non-clinical daily support",
+                growth_signal="Strong engagement with guided routines and community circles",
+            ),
+            NicheSpotlight(
+                title="Teen Athlete Recovery",
+                summary="Movement form checks, hydration tracking, and mood-safe coaching.",
+                audience="Parents, coaches, and high-school athletes",
+                growth_signal="High retention around season schedules and micro-plans",
+            ),
+        ]
+
 
 @strawberry.type
 class Mutation:
@@ -108,11 +189,23 @@ class Mutation:
         text: str,
     ) -> ChatReply:
         router: MCPRouter = info.context["mcp"]
+        user = info.context["user"]
+        store = ReasoningContextStore()
         profile_ctx = "Language: en\nGoals: wellness"
+        store.append_event(user.user_id, "user_message", {"text": text[:1000]})
         response = await router.ask(
             user_text=text,
             history=[CoachMessage(role="user", content=text)],
             profile_context=profile_ctx,
+        )
+        store.append_event(
+            user.user_id,
+            "assistant_message",
+            {
+                "agent": response.agent.value,
+                "message": response.message[:1200],
+                "safety_rewritten": response.safety_rewritten,
+            },
         )
         return ChatReply(
             content=response.message,
@@ -135,6 +228,37 @@ class Mutation:
             if scan.category == SafetyCategory.CRISIS
             else hash_for_audit("non-crisis"),
             language=language,
+            created_at=datetime.utcnow(),
+        )
+
+    @strawberry.mutation
+    async def ingest_pose_telemetry(
+        self,
+        info: Info,
+        keypoints: List[float],
+        behavior_state: str,
+        device_ts_iso: str,
+    ) -> PoseAnalysis:
+        user = info.context["user"]
+        store = ReasoningContextStore()
+        posture_score = max(0, min(100, int(sum(keypoints[:16]) % 100)))
+        alerts: list[str] = []
+        if posture_score < 45:
+            alerts.append("posture_drift")
+        if behavior_state.lower() in {"drowsy", "distressed"}:
+            alerts.append("behavior_attention")
+        payload: dict[str, Any] = {
+            "score": posture_score,
+            "behavior_state": behavior_state,
+            "alerts": alerts,
+            "device_ts_iso": device_ts_iso,
+        }
+        store.append_event(user.user_id, "pose_telemetry", payload)
+        return PoseAnalysis(
+            id=f"pose-{datetime.utcnow().timestamp()}",
+            posture_score=posture_score,
+            behavior_state=behavior_state,
+            alerts=alerts,
             created_at=datetime.utcnow(),
         )
 

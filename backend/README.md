@@ -9,6 +9,7 @@ Safety-first wellness coaching API.
 - **Strawberry GraphQL** — flexible query surface for the iOS client
 - **SQLAlchemy 2.0 (async)** + **PostgreSQL** — profiles, sessions, habits, audit
 - **Celery + Redis** — long-running AI and video analysis workers
+- **Redis Reasoning Context** — short-term event memory for chat + pose telemetry
 - **ChromaDB** — semantic memory (RAG) via HNSW
 - **Supabase Auth** — JWT flow with GraphQL interceptors
 
@@ -20,8 +21,10 @@ iOS client ──► FastAPI ──► Strawberry GraphQL ──► Services
                   │             └── SafetyValidator (pre- + post-)
                   │             └── MCPRouter ──► Llama 4 / Qwen 3.5 / Qwen 3.5 VL
                   │             └── WellnessMemory (ChromaDB)
+                  │             └── ReasoningContextStore (Redis)
                   │
                   └── REST /chat/ask  /healthz  /readyz
+                  └── REST /admin/dashboard
                   └── Celery workers: video analysis, weekly digests, housekeeping
 ```
 

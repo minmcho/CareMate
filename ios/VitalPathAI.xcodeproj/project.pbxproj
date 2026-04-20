@@ -26,6 +26,7 @@
 		0200000000000000000001A2 /* CommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A2 /* CommunityView.swift */; };
 		0200000000000000000001A3 /* Breathwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A3 /* Breathwork.swift */; };
 		0200000000000000000001A4 /* PlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A4 /* PlanView.swift */; };
+		0200000000000000000001A5 /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A5 /* AdminView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +50,7 @@
 		0100000000000000000001A2 /* CommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityView.swift; sourceTree = "<group>"; };
 		0100000000000000000001A3 /* Breathwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Breathwork.swift; sourceTree = "<group>"; };
 		0100000000000000000001A4 /* PlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanView.swift; sourceTree = "<group>"; };
+		0100000000000000000001A5 /* AdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -138,6 +140,7 @@
 				0100000000000000000000AB /* ProfileView.swift */,
 				0100000000000000000001A1 /* JournalView.swift */,
 				0100000000000000000001A2 /* CommunityView.swift */,
+				0100000000000000000001A5 /* AdminView.swift */,
 				0100000000000000000000AC /* CrisisModal.swift */,
 				0100000000000000000000AD /* BreathingOverlay.swift */,
 			);
@@ -237,6 +240,7 @@
 				0200000000000000000001A2 /* CommunityView.swift in Sources */,
 				0200000000000000000001A3 /* Breathwork.swift in Sources */,
 				0200000000000000000001A4 /* PlanView.swift in Sources */,
+				0200000000000000000001A5 /* AdminView.swift in Sources */,
 				0200000000000000000000AC /* CrisisModal.swift in Sources */,
 				0200000000000000000000AD /* BreathingOverlay.swift in Sources */,
 			);
