@@ -1,119 +1,385 @@
 /**
- * @license
- * SPDX-License-Identifier: Apache-2.0
+ * VitalPath AI — main application shell.
+ *
+ * - Apple "liquid glass" surfaces throughout.
+ * - Motion-powered screen transitions.
+ * - Safety-first: every message/output passes through the safety validator.
  */
 
-import { useState, ReactNode } from "react";
-import { Calendar, Pill, Languages, Utensils, Settings, GraduationCap, Bot } from "lucide-react";
-import { cn } from "./lib/utils";
-import { Language, useTranslation } from "./lib/i18n";
-import ScheduleView from "./components/ScheduleView";
-import MedicationView from "./components/MedicationView";
-import TranslateView from "./components/TranslateView";
-import DietView from "./components/DietView";
-import GuidanceView from "./components/GuidanceView";
-import AssistantView from "./components/AssistantView";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { AnimatePresence, motion } from "motion/react";
+
+import AmbientBackdrop from "./components/AmbientBackdrop";
+import BreathingOverlay from "./components/BreathingOverlay";
+import CrisisModal from "./components/CrisisModal";
+import TabBar, { TabKey } from "./components/TabBar";
+import VitalHeader from "./components/VitalHeader";
+import OnboardingView from "./views/OnboardingView";
+import HomeView from "./views/HomeView";
+import ChatView from "./views/ChatView";
+import VideoView from "./views/VideoView";
+import HabitsView from "./views/HabitsView";
+import ProfileView from "./views/ProfileView";
+import JournalView from "./views/JournalView";
+import CommunityView from "./views/CommunityView";
+import PlanView from "./views/PlanView";
+import InsightsView from "./views/InsightsView";
+import type {
+  BreathworkTechnique,
+  Challenge,
+  ChatMessage,
+  CommunityPost,
+  CommunityTopic,
+  CrisisEvent,
+  DailyPlan,
+  Habit,
+  JournalEntry,
+  Language,
+  MoodEntry,
+  SleepLog,
+  VideoAnalysis,
+  WeeklyInsight,
+  WeeklyPlan,
+  WellnessProfile,
+  WellnessSession,
+} from "./lib/types";
+import { newId, storage } from "./lib/storage";
+import { getBreakerState } from "./lib/ai";
+import { hashForAudit } from "./lib/safety";
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<
-    "schedule" | "medication" | "diet" | "guidance" | "assistant"
-  >("schedule");
-  const [lang, setLang] = useState<Language>("my"); // Default to Myanmar for caregiver
-  const t = useTranslation(lang);
+  const [profile, setProfile] = useState<WellnessProfile | null>(() => storage.getProfile());
+  const [lang, setLang] = useState<Language>(() => storage.getProfile()?.preferredLanguage ?? "en");
+  const [tab, setTab] = useState<TabKey>("home");
+  const [messages, setMessages] = useState<ChatMessage[]>(() => storage.getChat());
+  const [sessions, setSessions] = useState<WellnessSession[]>(() => storage.getSessions());
+  const [habits, setHabits] = useState<Habit[]>(() => storage.getHabits());
+  const [videos, setVideos] = useState<VideoAnalysis[]>(() => storage.getVideos());
+  const [crises, setCrises] = useState<CrisisEvent[]>(() => storage.getCrises());
+  const [journal, setJournal] = useState<JournalEntry[]>(() => storage.getJournal());
+  const [communityTopics, setCommunityTopics] = useState<CommunityTopic[]>(() => storage.getCommunityTopics());
+  const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>(() => storage.getCommunityPosts());
+  const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(() => storage.getDailyPlan());
+  const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlan | null>(() => storage.getWeeklyPlan());
+  const [sleepLogs, setSleepLogs] = useState<SleepLog[]>(() => storage.getSleepLogs());
+  const [moodEntries, setMoodEntries] = useState<MoodEntry[]>(() => storage.getMoodEntries());
+  const [weeklyInsights, setWeeklyInsights] = useState<WeeklyInsight[]>(() => storage.getWeeklyInsights());
+  const [challenges, setChallenges] = useState<Challenge[]>(() => {
+    const stored = storage.getChallenges();
+    if (stored.length > 0) return stored;
+    return defaultChallenges();
+  });
+  const [crisisOpen, setCrisisOpen] = useState(false);
+  const [breathingOpen, setBreathingOpen] = useState(false);
+  const [breathTechniqueId, setBreathTechniqueId] = useState<string | undefined>(undefined);
+  const [fallbackState, setFallbackState] = useState<"online" | "fallback">("online");
 
-  const languages: Language[] = ["en", "my", "th", "ar"];
-  const handleLanguageSwitch = () => {
-    const currentIndex = languages.indexOf(lang);
-    const nextIndex = (currentIndex + 1) % languages.length;
-    setLang(languages[nextIndex]);
+  // Seed starter habits on first launch.
+  useEffect(() => {
+    if (profile && habits.length === 0) {
+      const starter: Habit[] = [
+        {
+          id: newId(),
+          title: "Morning breathing",
+          emoji: "🧘",
+          goal: "mindfulness",
+          targetPerWeek: 5,
+          completedThisWeek: 0,
+          history: [],
+        },
+        {
+          id: newId(),
+          title: "10-minute walk",
+          emoji: "🏃",
+          goal: "movement",
+          targetPerWeek: 4,
+          completedThisWeek: 0,
+          history: [],
+        },
+        {
+          id: newId(),
+          title: "Hydrate before meals",
+          emoji: "💧",
+          goal: "hydration",
+          targetPerWeek: 7,
+          completedThisWeek: 0,
+          history: [],
+        },
+      ];
+      setHabits(starter);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profile]);
+
+  // Persist on change.
+  useEffect(() => {
+    if (profile) storage.setProfile(profile);
+  }, [profile]);
+  useEffect(() => storage.setChat(messages), [messages]);
+  useEffect(() => storage.setSessions(sessions), [sessions]);
+  useEffect(() => storage.setHabits(habits), [habits]);
+  useEffect(() => storage.setVideos(videos), [videos]);
+  useEffect(() => storage.setCrises(crises), [crises]);
+  useEffect(() => storage.setJournal(journal), [journal]);
+  useEffect(() => storage.setCommunityTopics(communityTopics), [communityTopics]);
+  useEffect(() => storage.setCommunityPosts(communityPosts), [communityPosts]);
+  useEffect(() => storage.setDailyPlan(dailyPlan), [dailyPlan]);
+  useEffect(() => storage.setWeeklyPlan(weeklyPlan), [weeklyPlan]);
+  useEffect(() => storage.setSleepLogs(sleepLogs), [sleepLogs]);
+  useEffect(() => storage.setMoodEntries(moodEntries), [moodEntries]);
+  useEffect(() => storage.setWeeklyInsights(weeklyInsights), [weeklyInsights]);
+  useEffect(() => storage.setChallenges(challenges), [challenges]);
+
+  // Monitor breaker state every few seconds so the header reflects reality.
+  useEffect(() => {
+    const id = setInterval(() => {
+      setFallbackState(getBreakerState().status === "closed" ? "online" : "fallback");
+    }, 3000);
+    return () => clearInterval(id);
+  }, []);
+
+  const handleLanguage = (next: Language) => {
+    setLang(next);
+    if (profile) setProfile({ ...profile, preferredLanguage: next });
   };
 
+  const handleSessionLogged = (durationSec: number) => {
+    const session: WellnessSession = {
+      id: newId(),
+      kind: tab === "video" ? "video" : tab === "habits" ? "habit" : "chat",
+      title: tab === "video" ? "Video check-in" : tab === "habits" ? "Habit done" : "Coach chat",
+      summary: "",
+      tags: profile ? profile.wellnessGoals : [],
+      durationSec,
+      createdAtISO: new Date().toISOString(),
+      synced: false,
+    };
+    setSessions((prev) => [session, ...prev].slice(0, 100));
+  };
+
+  const handleCrisis = (rawText?: string) => {
+    setCrisisOpen(true);
+    const event: CrisisEvent = {
+      id: newId(),
+      triggerHash: hashForAudit(rawText ?? Date.now().toString()),
+      language: lang,
+      createdAtISO: new Date().toISOString(),
+    };
+    setCrises((prev) => [event, ...prev].slice(0, 50));
+  };
+
+  const handleDeleteData = () => {
+    storage.clear();
+    setProfile(null);
+    setMessages([]);
+    setSessions([]);
+    setHabits([]);
+    setVideos([]);
+    setCrises([]);
+    setJournal([]);
+    setCommunityTopics([]);
+    setCommunityPosts([]);
+    setDailyPlan(null);
+    setWeeklyPlan(null);
+    setSleepLogs([]);
+    setMoodEntries([]);
+    setWeeklyInsights([]);
+    setChallenges(defaultChallenges());
+  };
+
+  const handleStartBreathwork = (technique?: BreathworkTechnique) => {
+    setBreathTechniqueId(technique?.id);
+    setBreathingOpen(true);
+  };
+
+  const activeView: ReactNode = useMemo(() => {
+    if (!profile) return null;
+    switch (tab) {
+      case "home":
+        return (
+          <HomeView
+            lang={lang}
+            profile={profile}
+            habits={habits}
+            sessions={sessions}
+            onStartBreathing={() => handleStartBreathwork()}
+            onOpenChat={() => setTab("chat")}
+            onMoodLogged={(score) => {
+              handleSessionLogged(30);
+              setMessages((prev) => [
+                ...prev,
+                {
+                  id: newId(),
+                  role: "system",
+                  content: `User mood self-report: ${score}/5`,
+                  createdAtISO: new Date().toISOString(),
+                },
+              ]);
+            }}
+          />
+        );
+      case "plan":
+        return (
+          <PlanView
+            lang={lang}
+            profile={profile}
+            dailyPlan={dailyPlan}
+            weeklyPlan={weeklyPlan}
+            onDailyPlanChange={setDailyPlan}
+            onWeeklyPlanChange={setWeeklyPlan}
+            onStartBreathwork={handleStartBreathwork}
+            onSessionLogged={handleSessionLogged}
+          />
+        );
+      case "insights":
+        return (
+          <InsightsView
+            lang={lang}
+            profile={profile}
+            sleepLogs={sleepLogs}
+            moodEntries={moodEntries}
+            insights={weeklyInsights}
+            challenges={challenges}
+            onSleepLogsChange={setSleepLogs}
+            onMoodEntriesChange={setMoodEntries}
+            onChallengesChange={setChallenges}
+          />
+        );
+      case "chat":
+        return (
+          <ChatView
+            lang={lang}
+            profile={profile}
+            messages={messages}
+            onMessagesChange={setMessages}
+            onCrisis={() => handleCrisis()}
+            onBreathing={() => handleStartBreathwork()}
+            onSessionLogged={handleSessionLogged}
+          />
+        );
+      case "video":
+        return (
+          <VideoView
+            lang={lang}
+            profile={profile}
+            recent={videos}
+            onNewAnalysis={(analysis) => {
+              setVideos((prev) => [analysis, ...prev].slice(0, 20));
+              handleSessionLogged(analysis.durationSec);
+            }}
+          />
+        );
+      case "habits":
+        return (
+          <HabitsView
+            lang={lang}
+            profile={profile}
+            habits={habits}
+            onHabitsChange={setHabits}
+            onProfileChange={setProfile}
+            onSessionLogged={handleSessionLogged}
+          />
+        );
+      case "journal":
+        return (
+          <JournalView
+            lang={lang}
+            profile={profile}
+            entries={journal}
+            onEntriesChange={setJournal}
+          />
+        );
+      case "community":
+        return (
+          <CommunityView
+            lang={lang}
+            profile={profile}
+            topics={communityTopics}
+            posts={communityPosts}
+            onTopicsChange={setCommunityTopics}
+            onPostsChange={setCommunityPosts}
+          />
+        );
+      case "profile":
+        return (
+          <ProfileView
+            lang={lang}
+            profile={profile}
+            onProfileChange={setProfile}
+            onDeleteData={handleDeleteData}
+            onLanguageChange={handleLanguage}
+          />
+        );
+      default:
+        return null;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tab, profile, lang, habits, sessions, messages, videos, journal, communityTopics, communityPosts, dailyPlan, weeklyPlan, sleepLogs, moodEntries, weeklyInsights, challenges]);
+
+  if (!profile) {
+    return (
+      <div className="relative min-h-screen text-slate-900 font-sans selection:bg-indigo-100">
+        <AmbientBackdrop />
+        <OnboardingView
+          lang={lang}
+          onLanguageChange={handleLanguage}
+          onComplete={(p) => {
+            setProfile(p);
+            setLang(p.preferredLanguage);
+          }}
+        />
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-indigo-50/80 via-blue-50/80 to-purple-50/80 text-slate-900 font-sans selection:bg-indigo-100">
-      {/* Header */}
-      <header className="bg-white/60 backdrop-blur-xl border-b border-white/50 px-5 py-4 flex items-center justify-between shrink-0 sticky top-0 z-10 shadow-sm">
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent tracking-tight">CareMate SG</h1>
-        <button
-          onClick={handleLanguageSwitch}
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/80 shadow-sm border border-white/50 text-sm font-semibold hover:bg-white transition-all active:scale-95"
-        >
-          <Languages className="w-4 h-4 text-indigo-500" />
-          {lang.toUpperCase()}
-        </button>
-      </header>
+    <div className="relative min-h-screen text-slate-900 font-sans selection:bg-indigo-100">
+      <AmbientBackdrop />
+      <div className="max-w-md mx-auto">
+        <VitalHeader lang={lang} onLanguageChange={handleLanguage} onlineFallback={fallbackState} />
+        <main>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={tab}
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            >
+              {activeView}
+            </motion.div>
+          </AnimatePresence>
+        </main>
+      </div>
 
-      {/* Main Content Area */}
-      <main className="flex-1 overflow-y-auto pb-20">
-        {activeTab === "schedule" && <ScheduleView lang={lang} />}
-        {activeTab === "medication" && <MedicationView lang={lang} />}
-        {activeTab === "diet" && <DietView lang={lang} />}
-        {activeTab === "guidance" && <GuidanceView lang={lang} />}
-        {activeTab === "assistant" && <AssistantView lang={lang} />}
-      </main>
-
-      {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-white/70 backdrop-blur-xl border-t border-white/50 flex items-center justify-around pb-safe pt-2 px-2 z-20 shadow-[0_-8px_30px_rgba(0,0,0,0.04)]">
-        <NavItem
-          icon={<Calendar className="w-5 h-5" />}
-          label={t("schedule")}
-          isActive={activeTab === "schedule"}
-          onClick={() => setActiveTab("schedule")}
-        />
-        <NavItem
-          icon={<Pill className="w-5 h-5" />}
-          label={t("medication")}
-          isActive={activeTab === "medication"}
-          onClick={() => setActiveTab("medication")}
-        />
-        <NavItem
-          icon={<Utensils className="w-5 h-5" />}
-          label={t("diet")}
-          isActive={activeTab === "diet"}
-          onClick={() => setActiveTab("diet")}
-        />
-        <NavItem
-          icon={<GraduationCap className="w-5 h-5" />}
-          label={t("guidance")}
-          isActive={activeTab === "guidance"}
-          onClick={() => setActiveTab("guidance")}
-        />
-        <NavItem
-          icon={<Bot className="w-5 h-5" />}
-          label={t("assistant")}
-          isActive={activeTab === "assistant"}
-          onClick={() => setActiveTab("assistant")}
-        />
-      </nav>
+      <TabBar active={tab} onChange={setTab} lang={lang} />
+      <CrisisModal
+        open={crisisOpen}
+        lang={lang}
+        onClose={() => setCrisisOpen(false)}
+        onBreathing={() => {
+          setCrisisOpen(false);
+          handleStartBreathwork();
+        }}
+      />
+      <BreathingOverlay
+        open={breathingOpen}
+        lang={lang}
+        techniqueId={breathTechniqueId}
+        onClose={() => setBreathingOpen(false)}
+        onFinish={(tech) => handleSessionLogged(tech.rounds * tech.pattern.reduce((a, b) => a + b, 0))}
+      />
     </div>
   );
 }
 
-function NavItem({
-  icon,
-  label,
-  isActive,
-  onClick,
-}: {
-  icon: ReactNode;
-  label: string;
-  isActive: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      onClick={onClick}
-      className={cn(
-        "flex flex-col items-center justify-center w-full py-2 gap-1 transition-all active:scale-95",
-        isActive ? "text-indigo-600" : "text-slate-400 hover:text-slate-600",
-      )}
-    >
-      <div className={cn(
-        "p-1.5 rounded-xl transition-all duration-300", 
-        isActive ? "bg-gradient-to-br from-indigo-500 to-purple-500 text-white shadow-md shadow-indigo-200" : "bg-transparent"
-      )}>
-        {icon}
-      </div>
-      <span className={cn("text-[10px] font-semibold tracking-wide", isActive ? "text-indigo-600" : "")}>{label}</span>
-    </button>
-  );
+function defaultChallenges(): Challenge[] {
+  return [
+    { id: "ch-mindfulness-7", title: "7-Day Mindfulness", description: "Meditate or breathe mindfully every day for a week.", category: "mindfulness", icon: "🧘", targetDays: 7, participantCount: 842, isActive: true, joined: false, progressDays: 0 },
+    { id: "ch-hydration-5", title: "Hydration Hero", description: "Drink 8 glasses of water daily for 5 days.", category: "hydration", icon: "💧", targetDays: 5, participantCount: 1203, isActive: true, joined: false, progressDays: 0 },
+    { id: "ch-sleep-7", title: "Sleep Reset", description: "Follow a screens-off ritual for 7 consecutive nights.", category: "sleep", icon: "🌙", targetDays: 7, participantCount: 567, isActive: true, joined: false, progressDays: 0 },
+    { id: "ch-movement-30", title: "Move More Month", description: "Log 30 minutes of movement 5 days per week.", category: "movement", icon: "🏃", targetDays: 30, participantCount: 2341, isActive: true, joined: false, progressDays: 0 },
+    { id: "ch-gratitude-14", title: "Gratitude Streak", description: "Write 3 gratitudes daily for 14 days.", category: "mindfulness", icon: "📝", targetDays: 14, participantCount: 456, isActive: true, joined: false, progressDays: 0 },
+    { id: "ch-nutrition-7", title: "Balanced Plate Week", description: "Eat veggies at every meal for 7 days.", category: "nutrition", icon: "🥗", targetDays: 7, participantCount: 789, isActive: true, joined: false, progressDays: 0 },
+  ];
 }
