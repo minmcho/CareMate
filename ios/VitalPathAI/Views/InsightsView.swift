@@ -354,14 +354,14 @@ struct SleepEntry: Identifiable {
     let hours: Double
     let date: Date
     var quality: Int {
-        let min = Int(hours * 60)
+        let totalMin = Int(hours * 60)
         var q = 0
-        if min >= 420 && min <= 540 { q += 40 }
-        else if min >= 300 { q += 25 }
-        else if min > 0 { q += 10 }
-        q += min(30, min / 15)
+        if totalMin >= 420 && totalMin <= 540 { q += 40 }
+        else if totalMin >= 300 { q += 25 }
+        else if totalMin > 0 { q += 10 }
+        q += Swift.min(30, totalMin / 15)
         q += 20
-        return min(q, 100)
+        return Swift.min(q, 100)
     }
     var dateLabel: String {
         let f = DateFormatter()
