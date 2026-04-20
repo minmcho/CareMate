@@ -24,6 +24,14 @@ const NICHES = [
     title: "Shift Worker Sleep",
     pitch: "Circadian-friendly plans and fatigue behavior monitoring.",
   },
+  {
+    title: "Voice-first Journaling",
+    pitch: "Auto-transcribed voice notes for users who prefer speaking over typing.",
+  },
+  {
+    title: "Voice Community Check-ins",
+    pitch: "Speech-to-text posts for fast, low-friction support updates.",
+  },
 ];
 
 const IOS_CHECKLIST = [

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ArrowLeft, Heart, MessageCircle, Users, Shield, Send } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle, Users, Shield, Send, Mic, MicOff } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import type { CommunityPost, CommunityTopic, Language, WellnessGoal, WellnessProfile } from "../lib/types";
 import { useTranslation } from "../lib/i18n";
 import { newId } from "../lib/storage";
+import { useSpeechToText } from "../lib/useSpeechToText";
 
 interface CommunityViewProps {
   lang: Language;
@@ -24,6 +25,8 @@ const DEFAULT_TOPICS: CommunityTopic[] = [
   { id: "t6", title: "Hydration", description: "Water intake tips and hydration reminders.", category: "hydration", icon: "💧", memberCount: 43, isOfficial: true, joined: false },
   { id: "t7", title: "Journaling", description: "Reflective writing prompts and journaling practice.", category: "mindfulness", icon: "📝", memberCount: 67, isOfficial: true, joined: false },
   { id: "t8", title: "Wellness Wins", description: "Celebrate milestones, streaks, and personal victories.", category: "movement", icon: "🎉", memberCount: 89, isOfficial: true, joined: false },
+  { id: "t9", title: "Voice Journaling", description: "Turn voice reflections into text for mindful daily logs.", category: "mindfulness", icon: "🎙️", memberCount: 51, isOfficial: true, joined: false },
+  { id: "t10", title: "Audio Community Check-ins", description: "Speak your update and auto-transcribe safe posts for support.", category: "stress", icon: "🗣️", memberCount: 45, isOfficial: true, joined: false },
 ];
 
 export default function CommunityView({
@@ -34,6 +37,7 @@ export default function CommunityView({
   const [selectedTopic, setSelectedTopic] = useState<CommunityTopic | null>(null);
   const [draftPost, setDraftPost] = useState("");
   const [filter, setFilter] = useState<WellnessGoal | "all">("all");
+  const speech = useSpeechToText(lang);
 
   function toggleJoin(topicId: string) {
     const updated = topics.map((tp) =>
@@ -58,6 +62,17 @@ export default function CommunityView({
     };
     onPostsChange([post, ...posts]);
     setDraftPost("");
+  }
+
+  function toggleVoiceInput() {
+    if (speech.isListening) {
+      speech.stop();
+      return;
+    }
+    const baseline = draftPost.trim();
+    speech.start((transcript) => {
+      setDraftPost(baseline ? `${baseline} ${transcript}` : transcript);
+    });
   }
 
   const filteredTopics = filter === "all" ? topics : topics.filter((tp) => tp.category === filter);
@@ -104,21 +119,40 @@ export default function CommunityView({
         {/* Composer */}
         <div className="mt-4">
           <GlassCard>
-            <div className="flex gap-2">
-              <textarea
-                value={draftPost}
-                onChange={(e) => setDraftPost(e.target.value)}
-                placeholder={t("postPlaceholder")}
-                rows={2}
-                className="flex-1 bg-transparent text-[14px] text-slate-900 outline-none resize-none placeholder:text-slate-400"
-              />
-              <button
-                onClick={submitPost}
-                disabled={!draftPost.trim()}
-                className="self-end w-9 h-9 rounded-full bg-gradient-to-b from-indigo-500 to-violet-600 grid place-items-center shadow-lg disabled:opacity-40"
-              >
-                <Send className="w-4 h-4 text-white" />
-              </button>
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-2">
+                <textarea
+                  value={draftPost}
+                  onChange={(e) => setDraftPost(e.target.value)}
+                  placeholder={t("postPlaceholder")}
+                  rows={2}
+                  className="flex-1 bg-transparent text-[14px] text-slate-900 outline-none resize-none placeholder:text-slate-400"
+                />
+                <button
+                  onClick={submitPost}
+                  disabled={!draftPost.trim()}
+                  className="self-end w-9 h-9 rounded-full bg-gradient-to-b from-indigo-500 to-violet-600 grid place-items-center shadow-lg disabled:opacity-40"
+                >
+                  <Send className="w-4 h-4 text-white" />
+                </button>
+              </div>
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={toggleVoiceInput}
+                  disabled={!speech.isSupported}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold transition ${
+                    speech.isListening
+                      ? "bg-rose-100 text-rose-700"
+                      : "bg-white/70 text-slate-600 border border-white/80"
+                  } disabled:opacity-40`}
+                >
+                  {speech.isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+                  {speech.isListening ? "Stop voice" : "Voice to text"}
+                </button>
+                {speech.lastError && (
+                  <span className="text-[11px] text-rose-500">Mic error: {speech.lastError}</span>
+                )}
+              </div>
             </div>
           </GlassCard>
         </div>

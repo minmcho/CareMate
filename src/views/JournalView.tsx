@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Plus, BookOpen, ArrowLeft, Trash2, Pencil } from "lucide-react";
+import { Plus, BookOpen, ArrowLeft, Trash2, Pencil, Mic, MicOff } from "lucide-react";
 import GlassCard from "../components/GlassCard";
 import GlassButton from "../components/GlassButton";
 import type { JournalEntry, Language, WellnessGoal, WellnessProfile } from "../lib/types";
 import { useTranslation } from "../lib/i18n";
 import { newId } from "../lib/storage";
+import { useSpeechToText } from "../lib/useSpeechToText";
 
 interface JournalViewProps {
   lang: Language;
@@ -33,6 +34,7 @@ export default function JournalView({ lang, profile, entries, onEntriesChange }:
   const [content, setContent] = useState("");
   const [mood, setMood] = useState<number | undefined>(undefined);
   const [tags, setTags] = useState<WellnessGoal[]>([]);
+  const speech = useSpeechToText(lang);
 
   function openNew() {
     setEditId(null);
@@ -78,6 +80,17 @@ export default function JournalView({ lang, profile, entries, onEntriesChange }:
     setView("list");
   }
 
+  function toggleVoiceInput() {
+    if (speech.isListening) {
+      speech.stop();
+      return;
+    }
+    const baseline = content.trim();
+    speech.start((transcript) => {
+      setContent(baseline ? `${baseline} ${transcript}` : transcript);
+    });
+  }
+
   function remove(id: string) {
     onEntriesChange(entries.filter((e) => e.id !== id));
   }
@@ -107,6 +120,26 @@ export default function JournalView({ lang, profile, entries, onEntriesChange }:
             rows={8}
             className="w-full bg-white/70 border border-white/80 rounded-2xl px-4 py-3 text-[15px] text-slate-900 outline-none backdrop-blur-xl resize-none"
           />
+          <div className="flex items-center justify-between">
+            <button
+              onClick={toggleVoiceInput}
+              disabled={!speech.isSupported}
+              className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[11px] font-semibold transition ${
+                speech.isListening
+                  ? "bg-rose-100 text-rose-700"
+                  : "bg-white/70 text-slate-600 border border-white/80"
+              } disabled:opacity-40`}
+            >
+              {speech.isListening ? <MicOff className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+              {speech.isListening ? "Stop voice note" : "Voice to text"}
+            </button>
+            {!speech.isSupported && (
+              <span className="text-[11px] text-slate-400">Voice input not supported on this browser.</span>
+            )}
+            {speech.lastError && (
+              <span className="text-[11px] text-rose-500">Mic error: {speech.lastError}</span>
+            )}
+          </div>
           <div>
             <div className="text-[12px] font-semibold text-slate-500 mb-2">Mood</div>
             <div className="flex gap-2">
