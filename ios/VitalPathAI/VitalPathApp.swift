@@ -31,6 +31,10 @@ struct VitalPathApp: App {
     }
 }
 
+enum AppTab: Hashable {
+    case home, plan, insights, chat, vision, habits, journal, community, profile
+}
+
 /// Global app state — observable via iOS 17's @Observable macro.
 @Observable
 final class AppState {
@@ -38,6 +42,7 @@ final class AppState {
     var crisisVisible: Bool = false
     var breathingVisible: Bool = false
     var onlineMode: OnlineMode = .online
+    var selectedTab: AppTab = .home
     /// Technique the overlay should play — defaults to box breathing.
     var breathingTechniqueID: String = BreathworkCatalog.default.id
 

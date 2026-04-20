@@ -8,8 +8,12 @@ import SwiftData
 
 struct HomeView: View {
     @Environment(AppState.self) private var appState
+    @Environment(\.modelContext) private var context
     @Query(sort: \WellnessProfile.createdAt, order: .reverse) private var profiles: [WellnessProfile]
     @Query private var habits: [Habit]
+
+    @State private var selectedMood: Int?
+    @State private var moodLogged = false
 
     var body: some View {
         NavigationStack {
@@ -69,12 +73,12 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 12) {
                 Text("DAILY CHECK-IN")
                     .font(.caption2).foregroundStyle(.secondary)
-                Text("How are you feeling?")
+                Text(moodLogged ? "Mood logged!" : "How are you feeling?")
                     .font(.headline)
                 HStack(spacing: 8) {
                     ForEach(Mood.all) { mood in
                         Button {
-                            // log mood
+                            logMood(mood)
                         } label: {
                             VStack(spacing: 4) {
                                 Text(mood.emoji).font(.title2)
@@ -82,7 +86,17 @@ struct HomeView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 8)
+                            .background(
+                                selectedMood == mood.score
+                                    ? AnyShapeStyle(LinearGradient(colors: [.indigo, .purple], startPoint: .top, endPoint: .bottom).opacity(0.3))
+                                    : AnyShapeStyle(Color.white.opacity(0.001)),
+                                in: RoundedRectangle(cornerRadius: 16)
+                            )
                             .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 16))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 16)
+                                    .stroke(selectedMood == mood.score ? Color.indigo : Color.clear, lineWidth: 2)
+                            )
                         }
                         .buttonStyle(.plain)
                     }
@@ -91,12 +105,40 @@ struct HomeView: View {
         }
     }
 
+    private func logMood(_ mood: Mood) {
+        withAnimation(.spring(response: 0.3)) {
+            selectedMood = mood.score
+            moodLogged = true
+        }
+        let session = WellnessSession(kind: "mood_checkin", title: "\(mood.label) — \(mood.emoji)")
+        session.moodAfter = mood.score
+        context.insert(session)
+        if let profile = profiles.first {
+            profile.lastCheckInAt = Date()
+        }
+    }
+
     private var focusGrid: some View {
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
-            FocusCard(title: "Mindfulness", subtitle: "5-min body scan", icon: "leaf.fill", tint: .purple)
-            FocusCard(title: "Movement", subtitle: "Stretch flow", icon: "figure.walk", tint: .pink)
-            FocusCard(title: "Nutrition", subtitle: "Plate method", icon: "leaf", tint: .green)
-            FocusCard(title: "Sleep", subtitle: "Wind-down", icon: "moon.stars.fill", tint: .indigo)
+            Button { appState.breathingVisible = true } label: {
+                FocusCard(title: "Mindfulness", subtitle: "5-min body scan", icon: "leaf.fill", tint: .purple)
+            }
+            .buttonStyle(.plain)
+
+            Button { appState.selectedTab = .habits } label: {
+                FocusCard(title: "Movement", subtitle: "Stretch flow", icon: "figure.walk", tint: .pink)
+            }
+            .buttonStyle(.plain)
+
+            Button { appState.selectedTab = .vision } label: {
+                FocusCard(title: "Nutrition", subtitle: "Plate method", icon: "leaf", tint: .green)
+            }
+            .buttonStyle(.plain)
+
+            Button { appState.selectedTab = .insights } label: {
+                FocusCard(title: "Sleep", subtitle: "Wind-down", icon: "moon.stars.fill", tint: .indigo)
+            }
+            .buttonStyle(.plain)
         }
     }
 

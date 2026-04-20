@@ -7,49 +7,47 @@ import SwiftUI
 
 struct RootView: View {
     @Environment(AppState.self) private var appState
-    @State private var selection: Tab = .home
-
-    enum Tab: Hashable { case home, plan, insights, chat, vision, habits, journal, community, profile }
 
     var body: some View {
+        @Bindable var appState = appState
         ZStack {
             AmbientBackdrop()
 
-            TabView(selection: $selection) {
+            TabView(selection: $appState.selectedTab) {
                 HomeView()
-                    .tag(Tab.home)
+                    .tag(AppTab.home)
                     .tabItem { Label("Home", systemImage: "house.fill") }
 
                 PlanView()
-                    .tag(Tab.plan)
+                    .tag(AppTab.plan)
                     .tabItem { Label("Plan", systemImage: "calendar") }
 
                 InsightsView()
-                    .tag(Tab.insights)
+                    .tag(AppTab.insights)
                     .tabItem { Label("Insights", systemImage: "sparkles") }
 
                 ChatView()
-                    .tag(Tab.chat)
+                    .tag(AppTab.chat)
                     .tabItem { Label("Coach", systemImage: "message.fill") }
 
                 VisionView()
-                    .tag(Tab.vision)
+                    .tag(AppTab.vision)
                     .tabItem { Label("Vision", systemImage: "video.fill") }
 
                 HabitsView()
-                    .tag(Tab.habits)
+                    .tag(AppTab.habits)
                     .tabItem { Label("Habits", systemImage: "flame.fill") }
 
                 JournalView()
-                    .tag(Tab.journal)
+                    .tag(AppTab.journal)
                     .tabItem { Label("Journal", systemImage: "book.fill") }
 
                 CommunityView()
-                    .tag(Tab.community)
+                    .tag(AppTab.community)
                     .tabItem { Label("Community", systemImage: "person.3.fill") }
 
                 ProfileView()
-                    .tag(Tab.profile)
+                    .tag(AppTab.profile)
                     .tabItem { Label("Profile", systemImage: "person.fill") }
             }
             .tint(.indigo)

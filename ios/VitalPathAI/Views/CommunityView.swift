@@ -350,6 +350,7 @@ private struct TopicDetailView: View {
 
 private struct PostRow: View {
     let post: CommunityPost
+    @State private var liked = false
 
     var body: some View {
         GlassCard {
@@ -382,11 +383,19 @@ private struct PostRow: View {
                     .font(.callout)
                     .foregroundStyle(.primary.opacity(0.9))
                 HStack(spacing: 16) {
-                    Label("\(post.likeCount)", systemImage: "heart")
+                    Button {
+                        liked.toggle()
+                        post.likeCount += liked ? 1 : -1
+                    } label: {
+                        Label("\(post.likeCount)", systemImage: liked ? "heart.fill" : "heart")
+                            .foregroundStyle(liked ? .pink : .secondary)
+                    }
+                    .buttonStyle(.plain)
+
                     Label("\(post.replyCount)", systemImage: "bubble.right")
+                        .foregroundStyle(.secondary)
                 }
                 .font(.caption)
-                .foregroundStyle(.secondary)
             }
         }
     }

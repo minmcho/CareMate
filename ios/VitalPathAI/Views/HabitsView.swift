@@ -53,7 +53,8 @@ struct HabitsView: View {
     }
 
     private var summary: some View {
-        GlassCard {
+        let freezeAvailable = profiles.first?.streakFreezeAvailable ?? false
+        return GlassCard {
             HStack {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("STREAK").font(.caption2).foregroundStyle(.secondary)
@@ -65,14 +66,22 @@ struct HabitsView: View {
                 }
                 Spacer()
                 Button {
-                    // freeze streak
+                    freezeStreak()
                 } label: {
-                    Label("Freeze", systemImage: "snowflake")
+                    Label(freezeAvailable ? "Freeze" : "Frozen", systemImage: "snowflake")
                 }
                 .buttonStyle(.bordered)
                 .buttonBorderShape(.capsule)
+                .disabled(!freezeAvailable)
             }
         }
+    }
+
+    private func freezeStreak() {
+        guard let profile = profiles.first, profile.streakFreezeAvailable else { return }
+        profile.streakFreezeAvailable = false
+        let session = WellnessSession(kind: "streak_freeze", title: "Rest day — streak preserved")
+        context.insert(session)
     }
 
     private var addSheet: some View {

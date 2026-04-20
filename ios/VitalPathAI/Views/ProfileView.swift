@@ -11,6 +11,7 @@ struct ProfileView: View {
     @Query private var profiles: [WellnessProfile]
 
     var body: some View {
+        @Bindable var appState = appState
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 16) {
@@ -39,7 +40,7 @@ struct ProfileView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             Label("Language", systemImage: "globe")
                                 .font(.headline)
-                            Picker("Language", selection: .constant(appState.language)) {
+                            Picker("Language", selection: $appState.language) {
                                 ForEach(AppLanguage.allCases) { lang in
                                     Text(lang.label).tag(lang)
                                 }
