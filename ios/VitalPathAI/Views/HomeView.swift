@@ -273,15 +273,15 @@ struct HomeView: View {
                 }
                 HomeFocusCard(title: "Movement", subtitle: "Build your habits",
                               icon: "figure.walk", tint: .pink) {
-                    appState.selectedTab = .habits
+                    appState.navigate(to: .habits)
                 }
                 HomeFocusCard(title: "Manifestation", subtitle: "Set intentions",
                               icon: "star.fill", tint: .orange) {
-                    appState.selectedTab = .manifest
+                    appState.navigate(to: .manifest)
                 }
                 HomeFocusCard(title: "Insights", subtitle: "Sleep & mood data",
                               icon: "sparkles", tint: .indigo) {
-                    appState.selectedTab = .insights
+                    appState.navigate(to: .insights)
                 }
             }
         }
