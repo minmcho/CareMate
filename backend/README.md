@@ -23,7 +23,7 @@ iOS client ──► FastAPI ──► Strawberry GraphQL ──► Services
                   │             └── WellnessMemory (ChromaDB)
                   │             └── ReasoningContextStore (Redis)
                   │
-                  └── REST /chat/ask  /healthz  /readyz
+                  └── REST /chat/ask  /voice/transcribe  /healthz  /readyz
                   └── REST /admin/dashboard
                   └── Celery workers: video analysis, weekly digests, housekeeping
 ```

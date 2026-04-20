@@ -102,6 +102,14 @@ class PoseAnalysis:
     created_at: datetime
 
 
+@strawberry.type
+class VoiceTranscription:
+    transcript: str
+    sanitized_transcript: str
+    source: str
+    safety_category: str
+
+
 # ---------------------------------------------------------------------------
 # Query / Mutation
 # ---------------------------------------------------------------------------
@@ -260,6 +268,32 @@ class Mutation:
             behavior_state=behavior_state,
             alerts=alerts,
             created_at=datetime.utcnow(),
+        )
+
+    @strawberry.mutation
+    async def transcribe_voice_text(
+        self,
+        info: Info,
+        transcript: str,
+        source: str = "journal",
+    ) -> VoiceTranscription:
+        user = info.context["user"]
+        store = ReasoningContextStore()
+        scan = scan_user_input(transcript)
+        store.append_event(
+            user.user_id,
+            "voice_transcription",
+            {
+                "source": source,
+                "safety_category": scan.category.value,
+                "length": len(scan.sanitized),
+            },
+        )
+        return VoiceTranscription(
+            transcript=transcript,
+            sanitized_transcript=scan.sanitized,
+            source=source,
+            safety_category=scan.category.value,
         )
 
 

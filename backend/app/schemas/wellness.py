@@ -52,3 +52,15 @@ class VideoAnalysisOut(BaseModel):
     cautions: List[str]
     nutrition_estimate: Optional[str] = None
     form_notes: Optional[List[str]] = None
+
+
+class VoiceTranscribeRequest(BaseModel):
+    transcript: str
+    source: str = "journal"  # journal | community
+
+
+class VoiceTranscribeResponse(BaseModel):
+    transcript: str
+    sanitized_transcript: str
+    source: str
+    safety_category: str

@@ -135,6 +135,8 @@ struct CommunityView: View {
             ("hydration",     "Hydration",           "Water intake tips and hydration reminders.",            .hydration,  "💧",  43),
             ("journaling",    "Journaling",          "Reflective writing prompts and journaling practice.",   .mindfulness,"📝",  67),
             ("wellness-wins", "Wellness Wins",       "Celebrate milestones, streaks, and personal victories.",.movement,   "🎉",  89),
+            ("voice-journal", "Voice Journaling",    "Speak your reflections and auto-convert to text notes.",.mindfulness,"🎙️",  51),
+            ("audio-checkin", "Audio Check-ins",     "Voice-first community updates with safe transcription.",.stress,     "🗣️",  45),
         ]
         for (slug, title, summary, category, icon, members) in seed {
             context.insert(CommunityTopic(
@@ -214,6 +216,7 @@ private struct TopicDetailView: View {
 
     @Query private var allPosts: [CommunityPost]
     @State private var draft: String = ""
+    @StateObject private var voice = VoiceInputService()
 
     var topicPosts: [CommunityPost] {
         allPosts
@@ -297,6 +300,21 @@ private struct TopicDetailView: View {
                     Label("Scanned for safety", systemImage: "shield.lefthalf.filled")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
+                    Button {
+                        if voice.isRecording {
+                            voice.stop()
+                        } else {
+                            voice.start()
+                        }
+                    } label: {
+                        Label(
+                            voice.isRecording ? "Stop voice" : "Voice to text",
+                            systemImage: voice.isRecording ? "mic.slash.fill" : "mic.fill"
+                        )
+                        .font(.caption2.bold())
+                    }
+                    .buttonStyle(.bordered)
+                    .tint(voice.isRecording ? .red : .indigo)
                     Spacer()
                     Button {
                         submit()
@@ -317,6 +335,11 @@ private struct TopicDetailView: View {
                 }
             }
         }
+        .onChange(of: voice.transcript) { _, newValue in
+            guard !newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+            draft = newValue
+        }
+        .onDisappear { voice.stop() }
     }
 
     private func submit() {

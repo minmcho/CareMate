@@ -27,6 +27,7 @@
 		0200000000000000000001A3 /* Breathwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A3 /* Breathwork.swift */; };
 		0200000000000000000001A4 /* PlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A4 /* PlanView.swift */; };
 		0200000000000000000001A5 /* AdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A5 /* AdminView.swift */; };
+		0200000000000000000001A6 /* VoiceInputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A6 /* VoiceInputService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -51,6 +52,7 @@
 		0100000000000000000001A3 /* Breathwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Breathwork.swift; sourceTree = "<group>"; };
 		0100000000000000000001A4 /* PlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanView.swift; sourceTree = "<group>"; };
 		0100000000000000000001A5 /* AdminView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminView.swift; sourceTree = "<group>"; };
+		0100000000000000000001A6 /* VoiceInputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceInputService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +110,7 @@
 			children = (
 				0100000000000000000000A3 /* SafetyValidator.swift */,
 				0100000000000000000001A3 /* Breathwork.swift */,
+				0100000000000000000001A6 /* VoiceInputService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -241,6 +244,7 @@
 				0200000000000000000001A3 /* Breathwork.swift in Sources */,
 				0200000000000000000001A4 /* PlanView.swift in Sources */,
 				0200000000000000000001A5 /* AdminView.swift in Sources */,
+				0200000000000000000001A6 /* VoiceInputService.swift in Sources */,
 				0200000000000000000000AC /* CrisisModal.swift in Sources */,
 				0200000000000000000000AD /* BreathingOverlay.swift in Sources */,
 			);
@@ -378,6 +382,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"VitalPathAI/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "VitalPath uses the microphone for optional voice-to-text journaling and community posts.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "VitalPath transcribes your voice into text for journaling and community drafts.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -406,6 +412,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"VitalPathAI/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "VitalPath uses the microphone for optional voice-to-text journaling and community posts.";
+				INFOPLIST_KEY_NSSpeechRecognitionUsageDescription = "VitalPath transcribes your voice into text for journaling and community drafts.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

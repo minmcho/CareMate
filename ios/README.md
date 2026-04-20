@@ -44,6 +44,7 @@ ios/
     ├── VitalPathApp.swift        # @main + SwiftData container
     ├── Models/Models.swift       # SwiftData models
     ├── Services/SafetyValidator.swift
+    ├── Services/VoiceInputService.swift
     ├── Networking/GraphQLClient.swift
     ├── ViewModels/ChatViewModel.swift
     ├── Views/
@@ -67,6 +68,10 @@ Open `ios/VitalPathAI.xcodeproj` in Xcode 15 or later. The project targets
 iOS 17+, uses `GENERATE_INFOPLIST_FILE = YES` (no hand-edited `Info.plist`),
 and ships a shared scheme so `xcodebuild -scheme VitalPathAI` works out of
 the box. Bundle identifier: `ai.vitalpath.VitalPathAI`.
+
+Voice-to-text features require microphone and speech recognition permissions
+(`NSMicrophoneUsageDescription`, `NSSpeechRecognitionUsageDescription`) which
+are configured in the Xcode project build settings.
 
 Before shipping:
 

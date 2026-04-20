@@ -14,6 +14,7 @@ from app.api.rest import health as health_router
 from app.api.rest import journal as journal_router
 from app.api.rest import community as community_router
 from app.api.rest import admin as admin_router
+from app.api.rest import voice as voice_router
 from app.core.config import get_settings
 from app.core.middleware import SecurityMiddleware
 from app.core.security import get_current_user
@@ -56,6 +57,7 @@ def create_app() -> FastAPI:
     app.include_router(journal_router.router)
     app.include_router(community_router.router)
     app.include_router(admin_router.router)
+    app.include_router(voice_router.router)
     app.include_router(
         build_graphql_router(mcp_router, get_current_user),
         prefix="/graphql",
