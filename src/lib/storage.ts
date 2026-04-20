@@ -7,6 +7,7 @@
  */
 
 import type {
+  Challenge,
   ChatMessage,
   CommunityPost,
   CommunityTopic,
@@ -14,7 +15,10 @@ import type {
   DailyPlan,
   Habit,
   JournalEntry,
+  MoodEntry,
+  SleepLog,
   VideoAnalysis,
+  WeeklyInsight,
   WeeklyPlan,
   WellnessProfile,
   WellnessSession,
@@ -34,6 +38,10 @@ const keys = {
   communityPosts: `${NS}.communityPosts`,
   dailyPlan: `${NS}.dailyPlan`,
   weeklyPlan: `${NS}.weeklyPlan`,
+  sleepLogs: `${NS}.sleepLogs`,
+  moodEntries: `${NS}.moodEntries`,
+  weeklyInsights: `${NS}.weeklyInsights`,
+  challenges: `${NS}.challenges`,
 } as const;
 
 function read<T>(key: string, fallback: T): T {
@@ -133,6 +141,34 @@ export const storage = {
   },
   setWeeklyPlan(p: WeeklyPlan | null): void {
     write(keys.weeklyPlan, p);
+  },
+
+  getSleepLogs(): SleepLog[] {
+    return read<SleepLog[]>(keys.sleepLogs, []);
+  },
+  setSleepLogs(s: SleepLog[]): void {
+    write(keys.sleepLogs, s);
+  },
+
+  getMoodEntries(): MoodEntry[] {
+    return read<MoodEntry[]>(keys.moodEntries, []);
+  },
+  setMoodEntries(m: MoodEntry[]): void {
+    write(keys.moodEntries, m);
+  },
+
+  getWeeklyInsights(): WeeklyInsight[] {
+    return read<WeeklyInsight[]>(keys.weeklyInsights, []);
+  },
+  setWeeklyInsights(w: WeeklyInsight[]): void {
+    write(keys.weeklyInsights, w);
+  },
+
+  getChallenges(): Challenge[] {
+    return read<Challenge[]>(keys.challenges, []);
+  },
+  setChallenges(c: Challenge[]): void {
+    write(keys.challenges, c);
   },
 };
 

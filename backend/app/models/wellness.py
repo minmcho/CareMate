@@ -6,7 +6,7 @@ import uuid
 from datetime import datetime
 from typing import List, Optional
 
-from sqlalchemy import ARRAY, JSON, Boolean, DateTime, ForeignKey, Integer, String
+from sqlalchemy import ARRAY, JSON, Boolean, DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -231,6 +231,129 @@ class TopicMemberRecord(Base):
         UUID(as_uuid=True), ForeignKey("wellness_profiles.id", ondelete="CASCADE"),
     )
     joined_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+
+
+# ---------------------------------------------------------------------------
+# Sleep analytics
+# ---------------------------------------------------------------------------
+
+
+class SleepRecord(Base):
+    """Nightly sleep log — synced from HealthKit or entered manually."""
+
+    __tablename__ = "sleep_records"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    profile_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("wellness_profiles.id", ondelete="CASCADE"), index=True,
+    )
+    date_iso: Mapped[str] = mapped_column(String(10))
+    bedtime_iso: Mapped[Optional[str]] = mapped_column(String(25), nullable=True)
+    waketime_iso: Mapped[Optional[str]] = mapped_column(String(25), nullable=True)
+    duration_min: Mapped[int] = mapped_column(Integer, default=0)
+    quality_score: Mapped[int] = mapped_column(Integer, default=0)
+    deep_min: Mapped[int] = mapped_column(Integer, default=0)
+    rem_min: Mapped[int] = mapped_column(Integer, default=0)
+    light_min: Mapped[int] = mapped_column(Integer, default=0)
+    awake_min: Mapped[int] = mapped_column(Integer, default=0)
+    source: Mapped[str] = mapped_column(String(16), default="manual")
+    notes: Mapped[str] = mapped_column(String(512), default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+
+    profile: Mapped["WellnessProfileRecord"] = relationship()
+
+
+# ---------------------------------------------------------------------------
+# Mood tracking
+# ---------------------------------------------------------------------------
+
+
+class MoodCheckInRecord(Base):
+    """Timestamped mood snapshot with optional context tags."""
+
+    __tablename__ = "mood_checkins"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    profile_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("wellness_profiles.id", ondelete="CASCADE"), index=True,
+    )
+    score: Mapped[int] = mapped_column(Integer)
+    energy: Mapped[int] = mapped_column(Integer, default=3)
+    tags: Mapped[List[str]] = mapped_column(ARRAY(String), default=list)
+    note: Mapped[str] = mapped_column(String(512), default="")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+
+    profile: Mapped["WellnessProfileRecord"] = relationship()
+
+
+# ---------------------------------------------------------------------------
+# AI-generated weekly insights
+# ---------------------------------------------------------------------------
+
+
+class WeeklyInsightRecord(Base):
+    """AI-generated wellness insight delivered once per week."""
+
+    __tablename__ = "weekly_insights"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    profile_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("wellness_profiles.id", ondelete="CASCADE"), index=True,
+    )
+    week_iso: Mapped[str] = mapped_column(String(10))
+    summary: Mapped[str] = mapped_column(Text, default="")
+    highlights: Mapped[List[str]] = mapped_column(ARRAY(String), default=list)
+    suggestions: Mapped[List[str]] = mapped_column(ARRAY(String), default=list)
+    mood_avg: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
+    sleep_avg_min: Mapped[Optional[int]] = mapped_column(Integer, nullable=True)
+    streak_days: Mapped[int] = mapped_column(Integer, default=0)
+    agent: Mapped[str] = mapped_column(String(24), default="deepseek")
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+
+    profile: Mapped["WellnessProfileRecord"] = relationship()
+
+
+# ---------------------------------------------------------------------------
+# Social challenges & gamification
+# ---------------------------------------------------------------------------
+
+
+class ChallengeRecord(Base):
+    """Community wellness challenge with timeframe and goal."""
+
+    __tablename__ = "challenges"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    title: Mapped[str] = mapped_column(String(200))
+    description: Mapped[str] = mapped_column(String(1024), default="")
+    category: Mapped[str] = mapped_column(String(32))
+    icon: Mapped[str] = mapped_column(String(8), default="🏆")
+    target_days: Mapped[int] = mapped_column(Integer, default=7)
+    participant_count: Mapped[int] = mapped_column(Integer, default=0)
+    starts_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+    ends_at: Mapped[Optional[datetime]] = mapped_column(DateTime, nullable=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+
+
+class ChallengeParticipantRecord(Base):
+    """Tracks user participation in a challenge."""
+
+    __tablename__ = "challenge_participants"
+
+    id: Mapped[uuid.UUID] = mapped_column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    challenge_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("challenges.id", ondelete="CASCADE"), index=True,
+    )
+    profile_id: Mapped[uuid.UUID] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("wellness_profiles.id", ondelete="CASCADE"), index=True,
+    )
+    progress_days: Mapped[int] = mapped_column(Integer, default=0)
+    completed: Mapped[bool] = mapped_column(Boolean, default=False)
+    joined_at: Mapped[datetime] = mapped_column(DateTime, default=_utcnow)
+
+    challenge: Mapped["ChallengeRecord"] = relationship()
+    profile: Mapped["WellnessProfileRecord"] = relationship()
 
 
 # ---------------------------------------------------------------------------

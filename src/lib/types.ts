@@ -195,3 +195,76 @@ export interface WeeklyPlan {
   focus: WellnessGoal[];
   days: DailyPlan[];
 }
+
+// ---------------------------------------------------------------------------
+// Sleep analytics
+// ---------------------------------------------------------------------------
+
+export interface SleepLog {
+  id: string;
+  dateISO: string;
+  bedtimeISO?: string;
+  waketimeISO?: string;
+  durationMin: number;
+  qualityScore: number;
+  deepMin: number;
+  remMin: number;
+  lightMin: number;
+  awakeMin: number;
+  source: "manual" | "healthkit" | "wearable";
+  notes: string;
+  createdAtISO: string;
+}
+
+// ---------------------------------------------------------------------------
+// Mood tracking
+// ---------------------------------------------------------------------------
+
+export interface MoodEntry {
+  id: string;
+  score: number; // 1..5
+  energy: number; // 1..5
+  tags: string[];
+  note: string;
+  createdAtISO: string;
+}
+
+export const MOOD_TAGS = [
+  "grateful", "anxious", "calm", "tired", "energized",
+  "focused", "stressed", "happy", "sad", "motivated",
+  "overwhelmed", "peaceful", "irritable", "hopeful", "lonely",
+] as const;
+
+// ---------------------------------------------------------------------------
+// AI weekly insights
+// ---------------------------------------------------------------------------
+
+export interface WeeklyInsight {
+  id: string;
+  weekISO: string;
+  summary: string;
+  highlights: string[];
+  suggestions: string[];
+  moodAvg?: number;
+  sleepAvgMin?: number;
+  streakDays: number;
+  agent: string;
+  createdAtISO: string;
+}
+
+// ---------------------------------------------------------------------------
+// Social challenges
+// ---------------------------------------------------------------------------
+
+export interface Challenge {
+  id: string;
+  title: string;
+  description: string;
+  category: WellnessGoal;
+  icon: string;
+  targetDays: number;
+  participantCount: number;
+  isActive: boolean;
+  joined: boolean;
+  progressDays: number;
+}

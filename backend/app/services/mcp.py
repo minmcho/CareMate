@@ -1,9 +1,9 @@
 """Multi-agent orchestrator.
 
 Dispatches requests between:
-    - Llama 4 (text coaching, low latency, high empathy)
-    - Qwen 3.5 (complex reasoning, multilingual)
-    - Qwen 3.5 VL (vision)
+    - Llama 4 Maverick 17B (text coaching, low latency, high empathy)
+    - DeepSeek R1 (complex reasoning, multilingual, chain-of-thought)
+    - Qwen 2.5 VL 72B (vision analysis)
 
 The public surface is ``MCPRouter`` which picks an agent, calls the upstream
 HTTP endpoint, and returns a normalized response.
@@ -29,8 +29,8 @@ from app.services.safety import (
 
 class AgentKind(str, Enum):
     LLAMA4 = "llama4"
-    QWEN35 = "qwen35"
-    QWEN35VL = "qwen35vl"
+    DEEPSEEK = "deepseek"
+    QWEN25VL = "qwen25vl"
     FALLBACK = "fallback"
 
 
@@ -92,12 +92,12 @@ class MCPRouter:
 
     def route(self, user_text: str, has_attachment: bool) -> RouteDecision:
         if has_attachment:
-            return RouteDecision(AgentKind.QWEN35VL, "Visual input detected")
+            return RouteDecision(AgentKind.QWEN25VL, "Visual input detected")
         lowered = user_text.lower()
-        if any(k in lowered for k in ("why", "explain", "compare", "strategy")):
-            return RouteDecision(AgentKind.QWEN35, "Complex reasoning")
+        if any(k in lowered for k in ("why", "explain", "compare", "strategy", "analyze", "reason")):
+            return RouteDecision(AgentKind.DEEPSEEK, "Complex reasoning")
         if any(c in user_text for c in NON_ENGLISH_HINT):
-            return RouteDecision(AgentKind.QWEN35, "Non-English input")
+            return RouteDecision(AgentKind.DEEPSEEK, "Non-English input")
         return RouteDecision(AgentKind.LLAMA4, "Conversational coaching")
 
     # ------------------------------------------------------------------
@@ -159,8 +159,8 @@ class MCPRouter:
         mode: str,
         frames_b64: List[str],
     ) -> dict:
-        """Call Qwen 3.5 VL to analyse extracted frames."""
-        endpoint, model = self._endpoint_for(AgentKind.QWEN35VL)
+        """Call Qwen 2.5 VL to analyse extracted frames."""
+        endpoint, model = self._endpoint_for(AgentKind.QWEN25VL)
         prompt = (
             "You are a wellness visual coach. Respond with ONLY valid JSON. "
             "Never make medical claims. Keep language supportive."
@@ -204,9 +204,9 @@ class MCPRouter:
     def _endpoint_for(self, agent: AgentKind) -> tuple[str, str]:
         if agent == AgentKind.LLAMA4:
             return self.settings.llama4_endpoint, self.settings.llama4_model
-        if agent == AgentKind.QWEN35:
-            return self.settings.qwen_text_endpoint, self.settings.qwen_text_model
-        if agent == AgentKind.QWEN35VL:
+        if agent == AgentKind.DEEPSEEK:
+            return self.settings.deepseek_endpoint, self.settings.deepseek_model
+        if agent == AgentKind.QWEN25VL:
             return self.settings.qwen_vl_endpoint, self.settings.qwen_vl_model
         return self.settings.llama4_endpoint, self.settings.llama4_model
 

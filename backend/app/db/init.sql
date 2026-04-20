@@ -158,6 +158,95 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 CREATE INDEX IF NOT EXISTS idx_audit_user ON audit_logs(user_id);
 CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_logs(created_at);
 
+-- Sleep records
+CREATE TABLE IF NOT EXISTS sleep_records (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    profile_id UUID REFERENCES wellness_profiles(id) ON DELETE CASCADE,
+    date_iso VARCHAR(10) NOT NULL,
+    bedtime_iso VARCHAR(25),
+    waketime_iso VARCHAR(25),
+    duration_min INTEGER DEFAULT 0,
+    quality_score INTEGER DEFAULT 0,
+    deep_min INTEGER DEFAULT 0,
+    rem_min INTEGER DEFAULT 0,
+    light_min INTEGER DEFAULT 0,
+    awake_min INTEGER DEFAULT 0,
+    source VARCHAR(16) DEFAULT 'manual',
+    notes VARCHAR(512) DEFAULT '',
+    created_at TIMESTAMP DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_sleep_profile ON sleep_records(profile_id);
+CREATE INDEX IF NOT EXISTS idx_sleep_date ON sleep_records(date_iso);
+
+-- Mood check-ins
+CREATE TABLE IF NOT EXISTS mood_checkins (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    profile_id UUID REFERENCES wellness_profiles(id) ON DELETE CASCADE,
+    score INTEGER NOT NULL,
+    energy INTEGER DEFAULT 3,
+    tags TEXT[] DEFAULT '{}',
+    note VARCHAR(512) DEFAULT '',
+    created_at TIMESTAMP DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_mood_profile ON mood_checkins(profile_id);
+
+-- Weekly insights (AI-generated)
+CREATE TABLE IF NOT EXISTS weekly_insights (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    profile_id UUID REFERENCES wellness_profiles(id) ON DELETE CASCADE,
+    week_iso VARCHAR(10) NOT NULL,
+    summary TEXT DEFAULT '',
+    highlights TEXT[] DEFAULT '{}',
+    suggestions TEXT[] DEFAULT '{}',
+    mood_avg FLOAT,
+    sleep_avg_min INTEGER,
+    streak_days INTEGER DEFAULT 0,
+    agent VARCHAR(24) DEFAULT 'deepseek',
+    created_at TIMESTAMP DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_insights_profile ON weekly_insights(profile_id);
+
+-- Social challenges
+CREATE TABLE IF NOT EXISTS challenges (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title VARCHAR(200) NOT NULL,
+    description VARCHAR(1024) DEFAULT '',
+    category VARCHAR(32) NOT NULL,
+    icon VARCHAR(8) DEFAULT '🏆',
+    target_days INTEGER DEFAULT 7,
+    participant_count INTEGER DEFAULT 0,
+    starts_at TIMESTAMP DEFAULT now(),
+    ends_at TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT now()
+);
+
+-- Challenge participants
+CREATE TABLE IF NOT EXISTS challenge_participants (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    challenge_id UUID REFERENCES challenges(id) ON DELETE CASCADE,
+    profile_id UUID REFERENCES wellness_profiles(id) ON DELETE CASCADE,
+    progress_days INTEGER DEFAULT 0,
+    completed BOOLEAN DEFAULT FALSE,
+    joined_at TIMESTAMP DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_cp_challenge ON challenge_participants(challenge_id);
+CREATE INDEX IF NOT EXISTS idx_cp_profile ON challenge_participants(profile_id);
+
+-- Seed official challenges
+INSERT INTO challenges (title, description, category, icon, target_days) VALUES
+    ('7-Day Mindfulness', 'Meditate or breathe mindfully every day for a week.', 'mindfulness', '🧘', 7),
+    ('Hydration Hero', 'Drink 8 glasses of water daily for 5 days.', 'hydration', '💧', 5),
+    ('Sleep Reset', 'Follow a screens-off ritual for 7 consecutive nights.', 'sleep', '🌙', 7),
+    ('Move More Month', 'Log 30 minutes of movement 5 days per week.', 'movement', '🏃', 30),
+    ('Gratitude Streak', 'Write 3 gratitudes daily for 14 days.', 'mindfulness', '📝', 14),
+    ('Balanced Plate Week', 'Eat veggies at every meal for 7 days.', 'nutrition', '🥗', 7)
+ON CONFLICT DO NOTHING;
+
 -- Seed official community topics
 INSERT INTO community_topics (title, description, category, icon, is_official) VALUES
     ('Stress & Calm', 'Share calming techniques and stress management tips.', 'stress', '🌿', TRUE),

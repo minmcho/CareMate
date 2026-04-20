@@ -52,3 +52,90 @@ class VideoAnalysisOut(BaseModel):
     cautions: List[str]
     nutrition_estimate: Optional[str] = None
     form_notes: Optional[List[str]] = None
+
+
+# ---------------------------------------------------------------------------
+# Sleep
+# ---------------------------------------------------------------------------
+
+
+class SleepRecordIn(BaseModel):
+    date_iso: str
+    bedtime_iso: Optional[str] = None
+    waketime_iso: Optional[str] = None
+    duration_min: int = 0
+    deep_min: int = 0
+    rem_min: int = 0
+    light_min: int = 0
+    awake_min: int = 0
+    source: str = "manual"
+    notes: str = ""
+
+
+class SleepRecordOut(SleepRecordIn):
+    id: str
+    quality_score: int = 0
+    created_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# Mood
+# ---------------------------------------------------------------------------
+
+
+class MoodCheckInIn(BaseModel):
+    score: int = Field(ge=1, le=5)
+    energy: int = Field(default=3, ge=1, le=5)
+    tags: List[str] = Field(default_factory=list)
+    note: str = ""
+
+
+class MoodCheckInOut(MoodCheckInIn):
+    id: str
+    created_at: datetime
+
+
+class MoodPatternOut(BaseModel):
+    trend: str
+    avg_score: float
+    avg_energy: float
+    top_tags: List[str]
+    alert: str
+
+
+# ---------------------------------------------------------------------------
+# Insights
+# ---------------------------------------------------------------------------
+
+
+class WeeklyInsightOut(BaseModel):
+    id: str
+    week_iso: str
+    summary: str
+    highlights: List[str]
+    suggestions: List[str]
+    mood_avg: Optional[float] = None
+    sleep_avg_min: Optional[int] = None
+    streak_days: int = 0
+    agent: str = "deepseek"
+    created_at: datetime
+
+
+# ---------------------------------------------------------------------------
+# Challenges
+# ---------------------------------------------------------------------------
+
+
+class ChallengeOut(BaseModel):
+    id: str
+    title: str
+    description: str
+    category: str
+    icon: str
+    target_days: int
+    participant_count: int
+    is_active: bool
+    starts_at: datetime
+    ends_at: Optional[datetime] = None
+    joined: bool = False
+    progress_days: int = 0

@@ -37,11 +37,15 @@ class Settings(BaseSettings):
 
     # --- Model endpoints ------------------------------------------------
     llama4_endpoint: str = Field(default="http://localhost:11434/api/generate")
-    llama4_model: str = Field(default="llama-4-8b-instruct")
-    qwen_text_endpoint: str = Field(default="http://localhost:11435/api/generate")
-    qwen_text_model: str = Field(default="qwen3.5-32b")
+    llama4_model: str = Field(default="llama-4-maverick-17b-128e")
+    deepseek_endpoint: str = Field(default="http://localhost:11435/api/generate")
+    deepseek_model: str = Field(default="deepseek-r1-0528")
     qwen_vl_endpoint: str = Field(default="http://localhost:11436/api/generate")
-    qwen_vl_model: str = Field(default="qwen3.5-vl-7b")
+    qwen_vl_model: str = Field(default="qwen2.5-vl-72b")
+
+    # --- Reasoning context (Redis) --------------------------------------
+    reasoning_context_ttl: int = Field(default=3600)
+    reasoning_max_turns: int = Field(default=20)
 
     # --- Safety ---------------------------------------------------------
     enable_crisis_escalation: bool = Field(default=True)

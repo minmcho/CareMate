@@ -40,4 +40,8 @@ celery_app.conf.beat_schedule = {
         "task": "app.tasks.housekeeping.compact_crisis_audit",
         "schedule": crontab(minute=15),
     },
+    "weekly-insight-generation": {
+        "task": "app.tasks.housekeeping.trigger_weekly_insights",
+        "schedule": crontab(day_of_week="sun", hour=20, minute=0),
+    },
 }

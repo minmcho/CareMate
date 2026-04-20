@@ -161,6 +161,36 @@ type Dictionary = {
   midday: string;
   evening: string;
   night: string;
+  // Sleep
+  sleep: string;
+  sleepLog: string;
+  sleepQuality: string;
+  sleepDuration: string;
+  sleepTrend: string;
+  bedtime: string;
+  wakeTime: string;
+  logSleep: string;
+  deepSleep: string;
+  remSleep: string;
+  sleepEmpty: string;
+  // Mood
+  mood: string;
+  moodCheckIn: string;
+  logMood: string;
+  energy: string;
+  moodTrend: string;
+  moodEmpty: string;
+  // Insights
+  insights: string;
+  weeklyInsights: string;
+  insightsEmpty: string;
+  aiPowered: string;
+  // Challenges
+  challengesTitle: string;
+  joinChallenge: string;
+  challengeProgress: string;
+  daysCompleted: string;
+  participants: string;
 };
 
 const en: Dictionary = {
@@ -316,6 +346,32 @@ const en: Dictionary = {
   midday: "Midday",
   evening: "Evening",
   night: "Night",
+  sleep: "Sleep",
+  sleepLog: "Sleep log",
+  sleepQuality: "Sleep quality",
+  sleepDuration: "Duration",
+  sleepTrend: "Sleep trend",
+  bedtime: "Bedtime",
+  wakeTime: "Wake time",
+  logSleep: "Log sleep",
+  deepSleep: "Deep sleep",
+  remSleep: "REM sleep",
+  sleepEmpty: "No sleep data yet. Log your first night.",
+  mood: "Mood",
+  moodCheckIn: "Mood check-in",
+  logMood: "Log mood",
+  energy: "Energy",
+  moodTrend: "Mood trend",
+  moodEmpty: "No mood data yet. Log how you feel.",
+  insights: "Insights",
+  weeklyInsights: "Weekly insights",
+  insightsEmpty: "Insights will appear after your first week of tracking.",
+  aiPowered: "AI-powered",
+  challengesTitle: "Challenges",
+  joinChallenge: "Join",
+  challengeProgress: "Progress",
+  daysCompleted: "days completed",
+  participants: "participants",
 };
 
 const my: Dictionary = {

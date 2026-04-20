@@ -26,6 +26,9 @@
 		0200000000000000000001A2 /* CommunityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A2 /* CommunityView.swift */; };
 		0200000000000000000001A3 /* Breathwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A3 /* Breathwork.swift */; };
 		0200000000000000000001A4 /* PlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A4 /* PlanView.swift */; };
+		0200000000000000000001A5 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A5 /* HealthKitManager.swift */; };
+		0200000000000000000001A6 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A6 /* InsightsView.swift */; };
+		0200000000000000000001A7 /* ComplianceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A7 /* ComplianceView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -49,6 +52,11 @@
 		0100000000000000000001A2 /* CommunityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommunityView.swift; sourceTree = "<group>"; };
 		0100000000000000000001A3 /* Breathwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Breathwork.swift; sourceTree = "<group>"; };
 		0100000000000000000001A4 /* PlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanView.swift; sourceTree = "<group>"; };
+		0100000000000000000001A5 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
+		0100000000000000000001A6 /* InsightsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsView.swift; sourceTree = "<group>"; };
+		0100000000000000000001A7 /* ComplianceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplianceView.swift; sourceTree = "<group>"; };
+		0100000000000000000001A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0100000000000000000001A9 /* VitalPathAI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VitalPathAI.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,6 +95,8 @@
 				0300000000000000000000B6 /* Networking */,
 				0300000000000000000000B7 /* ViewModels */,
 				0300000000000000000000B8 /* Views */,
+				0100000000000000000001A8 /* Info.plist */,
+				0100000000000000000001A9 /* VitalPathAI.entitlements */,
 				0100000000000000000000AE /* Assets.xcassets */,
 				0300000000000000000000B9 /* Preview Content */,
 			);
@@ -106,6 +116,7 @@
 			children = (
 				0100000000000000000000A3 /* SafetyValidator.swift */,
 				0100000000000000000001A3 /* Breathwork.swift */,
+				0100000000000000000001A5 /* HealthKitManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -138,6 +149,8 @@
 				0100000000000000000000AB /* ProfileView.swift */,
 				0100000000000000000001A1 /* JournalView.swift */,
 				0100000000000000000001A2 /* CommunityView.swift */,
+				0100000000000000000001A6 /* InsightsView.swift */,
+				0100000000000000000001A7 /* ComplianceView.swift */,
 				0100000000000000000000AC /* CrisisModal.swift */,
 				0100000000000000000000AD /* BreathingOverlay.swift */,
 			);
@@ -237,6 +250,9 @@
 				0200000000000000000001A2 /* CommunityView.swift in Sources */,
 				0200000000000000000001A3 /* Breathwork.swift in Sources */,
 				0200000000000000000001A4 /* PlanView.swift in Sources */,
+				0200000000000000000001A5 /* HealthKitManager.swift in Sources */,
+				0200000000000000000001A6 /* InsightsView.swift in Sources */,
+				0200000000000000000001A7 /* ComplianceView.swift in Sources */,
 				0200000000000000000000AC /* CrisisModal.swift in Sources */,
 				0200000000000000000000AD /* BreathingOverlay.swift in Sources */,
 			);
@@ -369,21 +385,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = VitalPathAI/VitalPathAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"VitalPathAI/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VitalPathAI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.vitalpath.VitalPathAI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -397,21 +410,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = VitalPathAI/VitalPathAI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"VitalPathAI/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = VitalPathAI/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = ai.vitalpath.VitalPathAI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;

@@ -23,8 +23,10 @@ import ProfileView from "./views/ProfileView";
 import JournalView from "./views/JournalView";
 import CommunityView from "./views/CommunityView";
 import PlanView from "./views/PlanView";
+import InsightsView from "./views/InsightsView";
 import type {
   BreathworkTechnique,
+  Challenge,
   ChatMessage,
   CommunityPost,
   CommunityTopic,
@@ -33,7 +35,10 @@ import type {
   Habit,
   JournalEntry,
   Language,
+  MoodEntry,
+  SleepLog,
   VideoAnalysis,
+  WeeklyInsight,
   WeeklyPlan,
   WellnessProfile,
   WellnessSession,
@@ -56,6 +61,14 @@ export default function App() {
   const [communityPosts, setCommunityPosts] = useState<CommunityPost[]>(() => storage.getCommunityPosts());
   const [dailyPlan, setDailyPlan] = useState<DailyPlan | null>(() => storage.getDailyPlan());
   const [weeklyPlan, setWeeklyPlan] = useState<WeeklyPlan | null>(() => storage.getWeeklyPlan());
+  const [sleepLogs, setSleepLogs] = useState<SleepLog[]>(() => storage.getSleepLogs());
+  const [moodEntries, setMoodEntries] = useState<MoodEntry[]>(() => storage.getMoodEntries());
+  const [weeklyInsights, setWeeklyInsights] = useState<WeeklyInsight[]>(() => storage.getWeeklyInsights());
+  const [challenges, setChallenges] = useState<Challenge[]>(() => {
+    const stored = storage.getChallenges();
+    if (stored.length > 0) return stored;
+    return defaultChallenges();
+  });
   const [crisisOpen, setCrisisOpen] = useState(false);
   const [breathingOpen, setBreathingOpen] = useState(false);
   const [breathTechniqueId, setBreathTechniqueId] = useState<string | undefined>(undefined);
@@ -112,6 +125,10 @@ export default function App() {
   useEffect(() => storage.setCommunityPosts(communityPosts), [communityPosts]);
   useEffect(() => storage.setDailyPlan(dailyPlan), [dailyPlan]);
   useEffect(() => storage.setWeeklyPlan(weeklyPlan), [weeklyPlan]);
+  useEffect(() => storage.setSleepLogs(sleepLogs), [sleepLogs]);
+  useEffect(() => storage.setMoodEntries(moodEntries), [moodEntries]);
+  useEffect(() => storage.setWeeklyInsights(weeklyInsights), [weeklyInsights]);
+  useEffect(() => storage.setChallenges(challenges), [challenges]);
 
   // Monitor breaker state every few seconds so the header reflects reality.
   useEffect(() => {
@@ -164,6 +181,10 @@ export default function App() {
     setCommunityPosts([]);
     setDailyPlan(null);
     setWeeklyPlan(null);
+    setSleepLogs([]);
+    setMoodEntries([]);
+    setWeeklyInsights([]);
+    setChallenges(defaultChallenges());
   };
 
   const handleStartBreathwork = (technique?: BreathworkTechnique) => {
@@ -208,6 +229,20 @@ export default function App() {
             onWeeklyPlanChange={setWeeklyPlan}
             onStartBreathwork={handleStartBreathwork}
             onSessionLogged={handleSessionLogged}
+          />
+        );
+      case "insights":
+        return (
+          <InsightsView
+            lang={lang}
+            profile={profile}
+            sleepLogs={sleepLogs}
+            moodEntries={moodEntries}
+            insights={weeklyInsights}
+            challenges={challenges}
+            onSleepLogsChange={setSleepLogs}
+            onMoodEntriesChange={setMoodEntries}
+            onChallengesChange={setChallenges}
           />
         );
       case "chat":
@@ -279,7 +314,7 @@ export default function App() {
         return null;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tab, profile, lang, habits, sessions, messages, videos, journal, communityTopics, communityPosts, dailyPlan, weeklyPlan]);
+  }, [tab, profile, lang, habits, sessions, messages, videos, journal, communityTopics, communityPosts, dailyPlan, weeklyPlan, sleepLogs, moodEntries, weeklyInsights, challenges]);
 
   if (!profile) {
     return (
@@ -336,4 +371,15 @@ export default function App() {
       />
     </div>
   );
+}
+
+function defaultChallenges(): Challenge[] {
+  return [
+    { id: "ch-mindfulness-7", title: "7-Day Mindfulness", description: "Meditate or breathe mindfully every day for a week.", category: "mindfulness", icon: "🧘", targetDays: 7, participantCount: 842, isActive: true, joined: false, progressDays: 0 },
+    { id: "ch-hydration-5", title: "Hydration Hero", description: "Drink 8 glasses of water daily for 5 days.", category: "hydration", icon: "💧", targetDays: 5, participantCount: 1203, isActive: true, joined: false, progressDays: 0 },
+    { id: "ch-sleep-7", title: "Sleep Reset", description: "Follow a screens-off ritual for 7 consecutive nights.", category: "sleep", icon: "🌙", targetDays: 7, participantCount: 567, isActive: true, joined: false, progressDays: 0 },
+    { id: "ch-movement-30", title: "Move More Month", description: "Log 30 minutes of movement 5 days per week.", category: "movement", icon: "🏃", targetDays: 30, participantCount: 2341, isActive: true, joined: false, progressDays: 0 },
+    { id: "ch-gratitude-14", title: "Gratitude Streak", description: "Write 3 gratitudes daily for 14 days.", category: "mindfulness", icon: "📝", targetDays: 14, participantCount: 456, isActive: true, joined: false, progressDays: 0 },
+    { id: "ch-nutrition-7", title: "Balanced Plate Week", description: "Eat veggies at every meal for 7 days.", category: "nutrition", icon: "🥗", targetDays: 7, participantCount: 789, isActive: true, joined: false, progressDays: 0 },
+  ];
 }

@@ -68,6 +68,34 @@ def compact_crisis_audit() -> int:
     return count
 
 
+@celery_app.task(name="app.tasks.housekeeping.trigger_weekly_insights")
+def trigger_weekly_insights() -> int:
+    """Queue weekly insight generation for all active profiles."""
+    logger.info("trigger_weekly_insights running")
+    from app.tasks.ai_tasks import generate_weekly_insight
+    engine = _engine()
+    from datetime import date
+    week_iso = date.today().isoformat()
+    with engine.begin() as conn:
+        result = conn.execute(
+            text(
+                "SELECT id::text, wellness_goals, streak_days "
+                "FROM wellness_profiles "
+                "WHERE last_check_in_at > :cutoff"
+            ),
+            {"cutoff": datetime.utcnow() - timedelta(days=14)},
+        )
+        count = 0
+        for row in result:
+            generate_weekly_insight.delay(
+                row[0], week_iso,
+                {"goals": row[1] or [], "streak_days": row[2] or 0},
+            )
+            count += 1
+    logger.info("trigger_weekly_insights queued {} profiles", count)
+    return count
+
+
 @celery_app.task(name="app.tasks.housekeeping.compact_audit_log")
 def compact_audit_log() -> int:
     """Trim audit log entries older than 365 days."""
