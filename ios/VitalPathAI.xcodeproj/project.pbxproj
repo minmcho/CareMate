@@ -29,6 +29,7 @@
 		0200000000000000000001A5 /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A5 /* HealthKitManager.swift */; };
 		0200000000000000000001A6 /* InsightsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A6 /* InsightsView.swift */; };
 		0200000000000000000001A7 /* ComplianceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001A7 /* ComplianceView.swift */; };
+		0200000000000000000001A8 /* ManifestationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100000000000000000001AA /* ManifestationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -57,6 +58,7 @@
 		0100000000000000000001A7 /* ComplianceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComplianceView.swift; sourceTree = "<group>"; };
 		0100000000000000000001A8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0100000000000000000001A9 /* VitalPathAI.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VitalPathAI.entitlements; sourceTree = "<group>"; };
+		0100000000000000000001AA /* ManifestationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManifestationView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,6 +153,7 @@
 				0100000000000000000001A2 /* CommunityView.swift */,
 				0100000000000000000001A6 /* InsightsView.swift */,
 				0100000000000000000001A7 /* ComplianceView.swift */,
+				0100000000000000000001AA /* ManifestationView.swift */,
 				0100000000000000000000AC /* CrisisModal.swift */,
 				0100000000000000000000AD /* BreathingOverlay.swift */,
 			);
@@ -253,6 +256,7 @@
 				0200000000000000000001A5 /* HealthKitManager.swift in Sources */,
 				0200000000000000000001A6 /* InsightsView.swift in Sources */,
 				0200000000000000000001A7 /* ComplianceView.swift in Sources */,
+				0200000000000000000001A8 /* ManifestationView.swift in Sources */,
 				0200000000000000000000AC /* CrisisModal.swift in Sources */,
 				0200000000000000000000AD /* BreathingOverlay.swift in Sources */,
 			);

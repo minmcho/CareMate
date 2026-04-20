@@ -291,3 +291,29 @@ final class CommunityReply {
         self.createdAt = Date()
     }
 }
+
+// MARK: - Manifestation
+
+@Model
+final class ManifestationEntry {
+    @Attribute(.unique) var id: UUID
+    var affirmation: String
+    var intention: String
+    var gratitudes: [String]
+    var visionText: String
+    var createdAt: Date
+
+    init(
+        affirmation: String = "",
+        intention: String = "",
+        gratitudes: [String] = ["", "", ""],
+        visionText: String = ""
+    ) {
+        self.id          = UUID()
+        self.affirmation = affirmation
+        self.intention   = intention
+        self.gratitudes  = gratitudes
+        self.visionText  = visionText
+        self.createdAt   = Date()
+    }
+}

@@ -46,6 +46,10 @@ struct RootView: View {
                     .tag(AppTab.community)
                     .tabItem { Label("Community", systemImage: "person.3.fill") }
 
+                ManifestationView()
+                    .tag(AppTab.manifest)
+                    .tabItem { Label("Manifest", systemImage: "star.fill") }
+
                 ProfileView()
                     .tag(AppTab.profile)
                     .tabItem { Label("Profile", systemImage: "person.fill") }

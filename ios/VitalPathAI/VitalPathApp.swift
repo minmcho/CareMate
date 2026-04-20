@@ -26,13 +26,14 @@ struct VitalPathApp: App {
             JournalEntry.self,
             CommunityTopic.self,
             CommunityPost.self,
-            CommunityReply.self
+            CommunityReply.self,
+            ManifestationEntry.self,
         ])
     }
 }
 
 enum AppTab: Hashable {
-    case home, plan, insights, chat, vision, habits, journal, community, profile
+    case home, plan, insights, chat, vision, habits, journal, community, manifest, profile
 }
 
 /// Global app state — observable via iOS 17's @Observable macro.
