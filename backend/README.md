@@ -58,9 +58,15 @@ cp .env.example .env
 docker compose up --build
 ```
 
+Optional ops dashboard (Flower):
+```bash
+docker compose --profile ops up --build
+```
+
 Then open:
 - REST docs: http://localhost:8000/docs
 - GraphQL playground: http://localhost:8000/graphql
+- Flower (ops profile): http://localhost:5555
 
 ## Tests
 

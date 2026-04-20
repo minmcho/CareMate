@@ -1,57 +1,21 @@
-version: "3.9"
-
-# ---------------------------------------------------------------------------
-# Production-ready docker-compose for VitalPath AI
-# ---------------------------------------------------------------------------
-# Features:
-#   - Nginx reverse proxy with rate limiting, TLS, security headers
-#   - FastAPI backend with non-root user, read-only FS, resource limits
-#   - Celery worker + beat scheduler
-#   - PostgreSQL 16 with init.sql auto-migration
-#   - Redis 7 with AOF persistence
-#   - ChromaDB for semantic memory
-#   - Health checks on every service
-#   - Named volumes for data persistence
-#   - Secret injection via env_file
-# ---------------------------------------------------------------------------
+name: vitalpath-backend
 
 services:
-
-  # ---- Reverse proxy ----
-  nginx:
-    image: nginx:1.27-alpine
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./certs:/etc/nginx/certs:ro
-    depends_on:
-      api:
-        condition: service_healthy
-    restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 128M
-
-  # ---- FastAPI backend ----
   api:
     build:
       context: .
       target: production
     command: >
       uvicorn app.main:app
-        --host 0.0.0.0
-        --port 8000
-        --workers 4
-        --loop uvloop
-        --http httptools
-        --proxy-headers
-        --forwarded-allow-ips '*'
-        --timeout-keep-alive 30
-    env_file: .env
+      --host 0.0.0.0
+      --port 8000
+      --workers 2
+      --loop uvloop
+      --http httptools
+      --proxy-headers
+      --forwarded-allow-ips=*
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-vitalpath}:${POSTGRES_PASSWORD:-vitalpath}@postgres:5432/${POSTGRES_DB:-vitalpath}
       REDIS_URL: redis://redis:6379/0
@@ -64,56 +28,50 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+      chroma:
+        condition: service_started
+    ports:
+      - "8000:8000"
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:8000/healthz"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/healthz"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 8
       start_period: 15s
     restart: unless-stopped
-    read_only: true
     tmpfs:
       - /tmp
-    deploy:
-      resources:
-        limits:
-          cpus: "2"
-          memory: 1G
 
-  # ---- Celery worker ----
   worker:
     build:
       context: .
       target: production
-    command: celery -A app.tasks.celery_app.celery_app worker --loglevel=info --concurrency=4
-    env_file: .env
+    command: celery -A app.tasks.celery_app.celery_app worker --loglevel=info --concurrency=4 --prefetch-multiplier=1
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-vitalpath}:${POSTGRES_PASSWORD:-vitalpath}@postgres:5432/${POSTGRES_DB:-vitalpath}
       REDIS_URL: redis://redis:6379/0
       CELERY_BROKER_URL: redis://redis:6379/1
       CELERY_RESULT_BACKEND: redis://redis:6379/2
+      CHROMA_HOST: chroma
+      CHROMA_PORT: 8000
     depends_on:
       api:
         condition: service_healthy
       redis:
         condition: service_healthy
     restart: unless-stopped
-    read_only: true
     tmpfs:
       - /tmp
-    deploy:
-      resources:
-        limits:
-          cpus: "2"
-          memory: 1G
 
-  # ---- Celery beat scheduler ----
   beat:
     build:
       context: .
       target: production
     command: celery -A app.tasks.celery_app.celery_app beat --loglevel=info
-    env_file: .env
+    env_file:
+      - .env
     environment:
       CELERY_BROKER_URL: redis://redis:6379/1
       CELERY_RESULT_BACKEND: redis://redis:6379/2
@@ -121,83 +79,66 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
-    read_only: true
     tmpfs:
       - /tmp
-    deploy:
-      resources:
-        limits:
-          cpus: "0.5"
-          memory: 256M
 
-  # ---- PostgreSQL ----
   postgres:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-vitalpath}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vitalpath}
       POSTGRES_DB: ${POSTGRES_DB:-vitalpath}
+    ports:
+      - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./app/db/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
-    ports:
-      - "5432:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vitalpath}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-vitalpath} -d ${POSTGRES_DB:-vitalpath}"]
       interval: 5s
       timeout: 5s
       retries: 10
     restart: unless-stopped
-    shm_size: 256mb
-    deploy:
-      resources:
-        limits:
-          cpus: "2"
-          memory: 1G
 
-  # ---- Redis ----
   redis:
     image: redis:7-alpine
-    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
-    volumes:
-      - redisdata:/data
+    command: redis-server --appendonly yes --save 60 1000 --maxmemory 512mb --maxmemory-policy allkeys-lru
     ports:
       - "6379:6379"
+    volumes:
+      - redisdata:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 3s
       retries: 10
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 512M
 
-  # ---- ChromaDB (semantic memory) ----
   chroma:
     image: chromadb/chroma:latest
-    volumes:
-      - chromadata:/chroma/chroma
     ports:
       - "8001:8000"
+    volumes:
+      - chromadata:/chroma/chroma
     healthcheck:
-      test: ["CMD", "curl", "-sf", "http://localhost:8000/api/v1/heartbeat"]
+      test: ["CMD", "wget", "-qO-", "http://localhost:8000/api/v1/heartbeat"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 6
     restart: unless-stopped
-    deploy:
-      resources:
-        limits:
-          cpus: "1"
-          memory: 1G
+
+  flower:
+    image: mher/flower:2.0.1
+    profiles: ["ops"]
+    command: celery --broker=redis://redis:6379/1 flower --port=5555
+    depends_on:
+      redis:
+        condition: service_healthy
+    ports:
+      - "5555:5555"
+    restart: unless-stopped
 
 volumes:
   pgdata:
-    driver: local
   redisdata:
-    driver: local
   chromadata:
-    driver: local
