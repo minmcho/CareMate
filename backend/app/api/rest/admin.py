@@ -27,6 +27,15 @@ async def dashboard(user: CurrentUser = Depends(get_current_user)) -> dict:
             "Teen athlete recovery",
             "Mindful shift-worker sleep",
         ],
+        "production_readiness": {
+            "reasoning_store": store.status(),
+            "app_store_controls": [
+                "privacy_manifest",
+                "report_content_action",
+                "account_delete_action",
+                "wellness_not_medicine_disclaimer",
+            ],
+        },
         "recent_events": [
             {
                 "event_type": row.event_type,

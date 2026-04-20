@@ -40,3 +40,9 @@ This plan upgrades the platform with an enterprise stack built around:
 2. Security review (JWT auth, secret rotation, rate limiting, audit logs).
 3. Incident runbook and on-call alerting wired (health checks + job failure alerts).
 4. Final TestFlight pass with App Store metadata/signing verification.
+
+## 6) Runtime resilience and optimization (implemented)
+
+- Reasoning context now degrades gracefully to in-memory mode if Redis is unavailable.
+- `/readyz` exposes structured checks for Supabase auth config, reasoning store status, DB URL and Celery broker wiring.
+- Admin dashboard includes production-readiness controls and reasoning-store backend status for operational visibility.

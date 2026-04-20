@@ -34,6 +34,13 @@ iOS client ──► FastAPI ──► Strawberry GraphQL ──► Services
 output. It blocks crisis phrasing, rewrites prohibited medical claims, and
 redacts PII. Crisis events are only ever stored as SHA-256 hashes.
 
+### Runtime resilience
+
+- `ReasoningContextStore` uses Redis by default and degrades to in-memory mode
+  when Redis is unavailable.
+- `/readyz` returns structured dependency checks (Supabase, reasoning store,
+  DB URL, Celery broker) for deployment readiness gates.
+
 ### Multi-agent routing (MCP)
 
 `app/services/mcp.py` dispatches:
