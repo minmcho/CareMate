@@ -9,7 +9,7 @@ struct RootView: View {
     @Environment(AppState.self) private var appState
     @State private var selection: Tab = .home
 
-    enum Tab: Hashable { case home, plan, chat, vision, habits, journal, community, profile }
+    enum Tab: Hashable { case home, plan, chat, vision, habits, journal, community, admin, profile }
 
     var body: some View {
         ZStack {
@@ -43,6 +43,10 @@ struct RootView: View {
                 CommunityView()
                     .tag(Tab.community)
                     .tabItem { Label("Community", systemImage: "person.3.fill") }
+
+                AdminView()
+                    .tag(Tab.admin)
+                    .tabItem { Label("Admin", systemImage: "gauge.with.dots.needle.67percent") }
 
                 ProfileView()
                     .tag(Tab.profile)

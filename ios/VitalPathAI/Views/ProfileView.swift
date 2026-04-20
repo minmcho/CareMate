@@ -62,6 +62,22 @@ struct ProfileView: View {
                             .foregroundStyle(.secondary)
                         }
                     }
+
+                    GlassCard {
+                        VStack(alignment: .leading, spacing: 10) {
+                            Label("App Store readiness", systemImage: "checkmark.seal")
+                                .font(.headline)
+                            Text("Production controls required for submission.")
+                                .font(.callout)
+                                .foregroundStyle(.secondary)
+                            Label("Report unsafe content", systemImage: "exclamationmark.bubble")
+                                .font(.caption)
+                            Label("Delete account and local data", systemImage: "trash")
+                                .font(.caption)
+                            Label("Wellness guidance disclaimer", systemImage: "cross.case")
+                                .font(.caption)
+                        }
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.bottom, 120)

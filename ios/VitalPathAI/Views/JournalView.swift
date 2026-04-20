@@ -204,6 +204,7 @@ private struct JournalComposer: View {
     @State private var content: String = ""
     @State private var mood: Int = 3
     @State private var selectedTags: Set<WellnessGoal> = []
+    @StateObject private var voice = VoiceInputService()
 
     var body: some View {
         NavigationStack {
@@ -224,6 +225,29 @@ private struct JournalComposer: View {
                 Section("Reflection") {
                     TextEditor(text: $content)
                         .frame(minHeight: 180)
+                    HStack {
+                        Button {
+                            if voice.isRecording {
+                                voice.stop()
+                            } else {
+                                voice.start()
+                            }
+                        } label: {
+                            Label(
+                                voice.isRecording ? "Stop voice to text" : "Voice to text",
+                                systemImage: voice.isRecording ? "mic.slash.fill" : "mic.fill"
+                            )
+                            .font(.caption.bold())
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(voice.isRecording ? .red : .indigo)
+                        Spacer()
+                        if let err = voice.lastError {
+                            Text(err)
+                                .font(.caption2)
+                                .foregroundStyle(.red)
+                        }
+                    }
                 }
                 Section("Tags") {
                     ForEach(WellnessGoal.allCases) { goal in
@@ -264,6 +288,11 @@ private struct JournalComposer: View {
                 }
             }
             .onAppear { hydrate() }
+            .onChange(of: voice.transcript) { _, newValue in
+                guard !newValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                content = newValue
+            }
+            .onDisappear { voice.stop() }
         }
     }
 

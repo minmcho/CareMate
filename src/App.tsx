@@ -23,6 +23,7 @@ import ProfileView from "./views/ProfileView";
 import JournalView from "./views/JournalView";
 import CommunityView from "./views/CommunityView";
 import PlanView from "./views/PlanView";
+import AdminView from "./views/AdminView";
 import type {
   BreathworkTechnique,
   ChatMessage,
@@ -265,6 +266,8 @@ export default function App() {
             onPostsChange={setCommunityPosts}
           />
         );
+      case "admin":
+        return <AdminView />;
       case "profile":
         return (
           <ProfileView

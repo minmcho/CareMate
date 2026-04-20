@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Home, MessageCircle, Video, Flame, User, BookOpen, Users, Calendar } from "lucide-react";
+import { Home, MessageCircle, Video, Flame, User, BookOpen, Users, Calendar, ShieldCheck } from "lucide-react";
 import { cn } from "../lib/utils";
 import type { Language } from "../lib/types";
 import { useTranslation } from "../lib/i18n";
@@ -13,6 +13,7 @@ export type TabKey =
   | "habits"
   | "journal"
   | "community"
+  | "admin"
   | "profile";
 
 interface TabBarProps {
@@ -31,6 +32,7 @@ export default function TabBar({ active, onChange, lang }: TabBarProps) {
     { key: "habits", label: t("habits"), icon: <Flame className="w-[22px] h-[22px]" /> },
     { key: "journal", label: t("journal"), icon: <BookOpen className="w-[22px] h-[22px]" /> },
     { key: "community", label: t("community"), icon: <Users className="w-[22px] h-[22px]" /> },
+    { key: "admin", label: "Admin", icon: <ShieldCheck className="w-[22px] h-[22px]" /> },
     { key: "profile", label: t("profile"), icon: <User className="w-[22px] h-[22px]" /> },
   ];
 
